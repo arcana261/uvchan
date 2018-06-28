@@ -19,8 +19,8 @@ lib_LTLIBRARIES = libuvchan-1.la
 libuvchan_1_la_SOURCES = \
 	src/uvchan/queue.c \
 	src/uvchan/queue.h \
-	src/uvchan/uvchan.h \
-	src/uvchan/uvchan.c
+	src/uvchan/chan.h \
+	src/uvchan/chan.c
 libuvchan_1_la_LDFLAGS = $(AM_LDFLAGS) -versioninfo $(LIBVERSION)
 
 # installation header files
@@ -36,15 +36,15 @@ libuvchan_1_la_LDFLAGS = $(AM_LDFLAGS) -versioninfo $(LIBVERSION)
 # tests
 check_PROGRAMS = \
 	test/uvchan/queue_test \
-	test/uvchan/uvchan_test
+	test/uvchan/chan_test
 
 # test/uvchan/queue_test
 test_uvchan_queue_test_SOURCES = test/uvchan/queue_test.c
 test_uvchan_queue_test_LDADD = $(lib_LTLIBRARIES)
 
 # test/uvchan/uvchan_test
-test_uvchan_uvchan_test_SOURCES = test/uvchan/uvchan_test.c
-test_uvchan_uvchan_test_LDADD = $(lib_LTLIBRARIES)
+test_uvchan_chan_test_SOURCES = test/uvchan/chan_test.c
+test_uvchan_chan_test_LDADD = $(lib_LTLIBRARIES)
 
 # makefile includes
 include make/lint.am

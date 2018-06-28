@@ -1,4 +1,4 @@
-#include <uvchan/uvchan.h>
+#include <uvchan/chan.h>
 
 uvchan_t* uvchan_new(size_t num_elements, size_t element_size) {
   uvchan_t* chan;

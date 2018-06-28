@@ -1,7 +1,7 @@
 #include <math.h>
 #include <testing.h>
 #include <time.h>
-#include <uvchan/uvchan.h>
+#include <uvchan/chan.h>
 
 #define ACTION_TYPE_PUSH 0
 #define ACTION_TYPE_CLOSE 1

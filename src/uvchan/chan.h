@@ -1,5 +1,5 @@
-#ifndef UVCHAN_UVCHAN_H__
-#define UVCHAN_UVCHAN_H__
+#ifndef UVCHAN_CHAN_H__
+#define UVCHAN_CHAN_H__
 
 #include <uv.h>
 #include <uvchan/queue.h>
@@ -37,4 +37,4 @@ void uvchan_start_push(uvchan_handle_t* handle, const void* element,
                        uvchan_push_cb cb);
 void uvchan_start_pop(uvchan_handle_t* handle, void* element, uvchan_pop_cb cb);
 
-#endif  // UVCHAN_UVCHAN_H__
+#endif  // UVCHAN_CHAN_H__
