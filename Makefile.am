@@ -1,5 +1,5 @@
 ACLOCAL_AMFLAGS = -I m4 --install
-AM_CPPFLAGS = -I$(top_srcdir)/src
+AM_CPPFLAGS = -I$(top_srcdir)/src/uvchan -I$(top_srcdir)/src
 AM_CFLAGS = 
 AM_LDFLAGS = 
 
@@ -12,7 +12,7 @@ EXTRA_DIST = \
 AM_CFLAGS += $(LIBUV_CFLAGS)
 AM_LDFLAGS += $(LIBUV_LIBS)
 
-targets
+# targets
 lib_LTLIBRARIES = libuvchan-1.la
 
 # libuvchan-1.la
@@ -32,13 +32,12 @@ libuvchan_1_la_LDFLAGS = $(AM_LDFLAGS) -versioninfo $(LIBVERSION)
 # pkgconfiglib_DATA = libcontext.pc
 
 # tests
-# check_PROGRAMS = \
-#  test/context/valuemap_test \
-#  test/context/background_test
+check_PROGRAMS = \
+	test/uvchan/queue_test
 
-# context/valuemap test
-# test_context_valuemap_test_SOURCES = test/context/valuemap_test.c
-# test_context_valuemap_test_LDADD = $(lib_LTLIBRARIES)
+# test/uvchan/queue_test
+test_uvchan_queue_test_SOURCES = test/uvchan/queue_test.c
+test_uvchan_queue_test_LDADD = $(lib_LTLIBRARIES)
 
 # context/background test
 # test_context_background_test_SOURCES = test/context/background_test.c
