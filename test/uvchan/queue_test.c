@@ -38,14 +38,18 @@ void _t_run(void (*fn)(void), const char* name) {
 }
 
 #define _T_COMMA ,
+#define _T_PARAN_OPEN (
+#define _T_PARAN_CLOSE )
 #define _T_ASSERT(check, msg) \
   ((check) ? (1) : (_t_fail(__FILE__, __LINE__, msg)))
 #define T_ASSERT(expr) (_T_ASSERT((expr), #expr))
 #define T_TRUE(expr) (_T_ASSERT((expr), "expected \"" #expr "\" to be true"))
 #define T_FALSE(expr) (_T_ASSERT(!(expr), "expected \"" #expr "\" to be false"))
-#define T_CMPINT(expr, op, value)                                        \
-  (_T_ASSERT(((expr)op(value)), "expected \"" #expr "\"[=%d] to be " #op \
-                                " to %d" _T_COMMA(expr) _T_COMMA value))
+#define T_CMPINT(expr, op, value)              \
+  (_T_ASSERT(                                  \
+      ((expr)op(value)),                       \
+      "expected \"" #expr "\"[=%d] to be " #op \
+      " to %d" _T_COMMA _T_PARAN_OPEN expr _T_PARAN_CLOSE _T_COMMA value))
 
 #define T_RUN(test) _t_run(test, #test)
 
