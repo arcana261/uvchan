@@ -30,8 +30,8 @@ libuvchan_1_la_LDFLAGS = $(AM_LDFLAGS) -versioninfo $(LIBVERSION)
 # 	src/context/error.h
 
 # installation pkgconfig files
-# pkgconfiglibdir = $(libdir)/pkgconfig
-# pkgconfiglib_DATA = libcontext.pc
+pkgconfiglibdir = $(libdir)/pkgconfig
+pkgconfiglib_DATA = libuvchan.pc
 
 # tests
 check_PROGRAMS = \
