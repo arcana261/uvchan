@@ -256,11 +256,9 @@ static void _dealloc_callback(uv_handle_t* handle) { free(handle); }
 
 void _test_using(action_t* actions, size_t count, size_t num_elements) {
   data_t data;
-  uvchan_t ch;
   uv_loop_t loop;
 
-  uvchan_init(&ch, num_elements, sizeof(int));
-  data.ch = &ch;
+  data.ch = uvchan_new(num_elements, sizeof(int));
   data.actions = actions;
   data.count = count;
   data.i = 0;
@@ -271,7 +269,7 @@ void _test_using(action_t* actions, size_t count, size_t num_elements) {
 
   T_FALSE(uv_run(&loop, UV_RUN_DEFAULT));
 
-  uvchan_destroy(&ch);
+  uvchan_unref(data.ch);
   uv_loop_close(&loop);
 }
 
@@ -280,11 +278,9 @@ void _test_coroutine_using(action_t* routine1, size_t routine1_count,
                            size_t num_elements) {
   data_t routine1_data;
   data_t routine2_data;
-  uvchan_t ch;
   uv_loop_t loop;
 
-  uvchan_init(&ch, num_elements, sizeof(int));
-  routine1_data.ch = &ch;
+  routine1_data.ch = uvchan_new(num_elements, sizeof(int));
   routine1_data.actions = routine1;
   routine1_data.count = routine1_count;
   routine1_data.i = 0;
@@ -300,7 +296,7 @@ void _test_coroutine_using(action_t* routine1, size_t routine1_count,
 
   T_FALSE(uv_run(&loop, UV_RUN_DEFAULT));
 
-  uvchan_destroy(&ch);
+  uvchan_unref(routine1_data.ch);
   uv_loop_close(&loop);
 }
 

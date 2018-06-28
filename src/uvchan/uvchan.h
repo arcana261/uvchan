@@ -9,6 +9,7 @@ typedef struct _uvchan_t {
   int closed;
   int polling;
   int poll_required;
+  int reference_count;
 } uvchan_t;
 
 typedef struct _uvchan_handle_t uvchan_handle_t;
@@ -25,12 +26,13 @@ typedef struct _uvchan_handle_t {
   void* data;
 } uvchan_handle_t;
 
-void uvchan_init(uvchan_t* chan, size_t num_elements, size_t element_size);
-void uvchan_close(uvchan_t* chan);
-void uvchan_destroy(uvchan_t* chan);
+uvchan_t* uvchan_new(size_t num_elements, size_t element_size);
+void uvchan_ref(uvchan_t* chan);
+void uvchan_unref(uvchan_t* chan);
 
 void uvchan_handle_init(uv_loop_t* loop, uvchan_handle_t* handle, uvchan_t* ch);
 
+void uvchan_close(uvchan_t* chan);
 void uvchan_start_push(uvchan_handle_t* handle, const void* element,
                        uvchan_push_cb cb);
 void uvchan_start_pop(uvchan_handle_t* handle, void* element, uvchan_pop_cb cb);

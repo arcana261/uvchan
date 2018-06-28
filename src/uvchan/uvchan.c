@@ -1,6 +1,10 @@
 #include <uvchan/uvchan.h>
 
-void uvchan_init(uvchan_t* chan, size_t num_elements, size_t element_size) {
+uvchan_t* uvchan_new(size_t num_elements, size_t element_size) {
+  uvchan_t* chan;
+
+  chan = (uvchan_t*)malloc(sizeof(uvchan_t));
+
   if (num_elements < 1) {
     num_elements = 1;
     chan->poll_required = 1;
@@ -11,11 +15,21 @@ void uvchan_init(uvchan_t* chan, size_t num_elements, size_t element_size) {
   uvchan_queue_init(&chan->queue, num_elements, element_size);
   chan->closed = 0;
   chan->polling = 0;
+  chan->reference_count = 1;
+
+  return chan;
 }
 
-void uvchan_close(uvchan_t* chan) { chan->closed = 1; }
+void uvchan_unref(uvchan_t* chan) {
+  if ((--chan->reference_count) < 1) {
+    uvchan_queue_destroy(&chan->queue);
+    free(chan);
+  }
+}
 
-void uvchan_destroy(uvchan_t* chan) { uvchan_queue_destroy(&chan->queue); }
+void uvchan_ref(uvchan_t* chan) { ++chan->reference_count; }
+
+void uvchan_close(uvchan_t* chan) { chan->closed = 1; }
 
 void uvchan_handle_init(uv_loop_t* loop, uvchan_handle_t* handle,
                         uvchan_t* ch) {
