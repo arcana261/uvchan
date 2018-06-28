@@ -86,7 +86,7 @@ In that case we need to manually run linked program in `.libs` folder with custo
 
 **First** Identify which test/tests you wish to debug. As an example, for `valuemap_test`
 use `test/context/valuemap_test -l` to identify available tests, and
-`test/context/valuemap_test -p <test_path>` to run a specific test.
+`test/context/valuemap_test -t <test_path>` to run a specific test.
 
 **Second** Fill `.vscode/launch.json` with appropriate values to be used for debugger.
 Listing below shows an example setup in which we try to debug a specific test using
@@ -104,7 +104,7 @@ provided `args` configuration.
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceRoot}/test/context/.libs/valuemap_test",
-            "args": ["-p", "/valuemap/numeric_string_should_transform_to_int"],
+            "args": ["-t", "/valuemap/numeric_string_should_transform_to_int"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [{

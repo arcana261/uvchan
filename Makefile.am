@@ -1,5 +1,5 @@
 ACLOCAL_AMFLAGS = -I m4 --install
-AM_CPPFLAGS = -I$(top_srcdir)/src/uvchan -I$(top_srcdir)/src
+AM_CPPFLAGS = -I$(top_srcdir)/src/uvchan -I$(top_srcdir)/src -I$(top_srcdir)/test
 AM_CFLAGS = 
 AM_LDFLAGS = 
 
@@ -18,7 +18,9 @@ lib_LTLIBRARIES = libuvchan-1.la
 # libuvchan-1.la
 libuvchan_1_la_SOURCES = \
 	src/uvchan/queue.c \
-	src/uvchan/queue.h
+	src/uvchan/queue.h \
+	src/uvchan/uvchan.h \
+	src/uvchan/uvchan.c
 libuvchan_1_la_LDFLAGS = $(AM_LDFLAGS) -versioninfo $(LIBVERSION)
 
 # installation header files
@@ -33,15 +35,16 @@ libuvchan_1_la_LDFLAGS = $(AM_LDFLAGS) -versioninfo $(LIBVERSION)
 
 # tests
 check_PROGRAMS = \
-	test/uvchan/queue_test
+	test/uvchan/queue_test \
+	test/uvchan/uvchan_test
 
 # test/uvchan/queue_test
 test_uvchan_queue_test_SOURCES = test/uvchan/queue_test.c
 test_uvchan_queue_test_LDADD = $(lib_LTLIBRARIES)
 
-# context/background test
-# test_context_background_test_SOURCES = test/context/background_test.c
-# test_context_background_test_LDADD = $(lib_LTLIBRARIES)
+# test/uvchan/uvchan_test
+test_uvchan_uvchan_test_SOURCES = test/uvchan/uvchan_test.c
+test_uvchan_uvchan_test_LDADD = $(lib_LTLIBRARIES)
 
 # makefile includes
 include make/lint.am

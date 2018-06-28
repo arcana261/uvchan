@@ -14,9 +14,13 @@ AM_PROG_AR
 AC_PROG_CC
 AC_LANG([C])
 AX_COMPILER_CHECKS
+AX_CHECK_CFLAG_APPEND([-std=gnu89])
 AX_CHECK_CFLAG_APPEND([-Werror])
 AX_CHECK_CFLAG_APPEND([-Wall])
 AX_CHECK_CFLAG_APPEND([-fPIC])
+AX_CHECK_CFLAG_APPEND([-Wextra])
+AX_CHECK_CFLAG_APPEND([-Wno-unused-parameter])
+AX_CHECK_CFLAG_APPEND([-Wstrict-prototypes])
 
 LT_INIT
 
@@ -41,7 +45,7 @@ AX_COVERAGE
 AX_DPKG
 
 # resolve libuv
-PKG_CHECK_MODULES([LIBUV], [libuv >= 0.10])
+PKG_CHECK_MODULES([LIBUV], [libuv >= 1.19])
 
 # set output headerfile includedir
 # AC_SUBST([includedir], [$includedir/SOMETHING])
