@@ -6,6 +6,6 @@ includedir=@includedir@
 Name: @PACKAGE_NAME@
 Description: context akin to glang's context objects!
 Version: @PACKAGE_VERSION@
-Requires: glib-2.0 >= 2.40, gobject-2.0 >= 2.40
+Requires: @LIBUV_PKG_REQ@
 Cflags: -I${includedir}
 Libs: -L${libdir} -lcontext-1

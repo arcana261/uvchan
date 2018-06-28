@@ -47,9 +47,11 @@ AX_DPKG
 # resolve libuv
 PKG_CHECK_MODULES([LIBUV], [libuv >= 1.0 libuv < 2.0], [
     AC_DEFINE([LIBUV_1X], [1], [Use libuv branch 1.x])
+    AC_SUBST([LIBUV_PKG_REQ], ["libuv >= 1.0, libuv < 2.0"])
 ], [
     PKG_CHECK_MODULES([LIBUV], [libuv >= 0.1 libuv < 1.0], [
         AC_DEFINE([LIBUV_0X], [1], [Use libuv branch 0.x])
+        AC_SUBST([LIBUV_PKG_REQ], ["libuv >= 1.0, libuv < 2.0"])
         AX_RED_WARN([falling back to libuv branch 0.x])
     ])
 ])
