@@ -132,7 +132,6 @@ void test_full_queue_waiting(void) {
 
   _test_coroutine_using(push_routine, sizeof(push_routine) / sizeof(action_t),
                         pop_routine, sizeof(pop_routine) / sizeof(action_t), 1);
-
 }
 
 void test_full_push_pop(void) {
@@ -208,7 +207,6 @@ void _perform_action(data_t* data) {
       data->i++;
       _perform_action(data);
       break;
-
   }
 }
 
