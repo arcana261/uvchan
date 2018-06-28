@@ -288,7 +288,7 @@ void _test_using(action_t* actions, size_t count, size_t num_elements) {
 #else
 #error unknown operation for unknown version of libuv
 #endif
-  
+
   data.loop = loop;
 
   _perform_action(&data);
@@ -326,7 +326,7 @@ void _test_coroutine_using(action_t* routine1, size_t routine1_count,
 #else
 #error unknown operation for unknown version of libuv
 #endif
-  
+
   routine1_data.loop = loop;
 
   routine2_data = routine1_data;
