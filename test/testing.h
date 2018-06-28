@@ -88,6 +88,7 @@ void _t_run(void (*fn)(void), const char* name) {
 #define T_ASSERT(expr) (_T_ASSERT((expr), #expr))
 #define T_TRUE(expr) (_T_ASSERT((expr), "expected \"" #expr "\" to be true"))
 #define T_FALSE(expr) (_T_ASSERT(!(expr), "expected \"" #expr "\" to be false"))
+#define T_ZERO(expr) (_T_ASSERT(!(expr), "expected \"" #expr "\" to be zero"))
 #define T_CMPINT(expr, op, value)              \
   (_T_ASSERT(                                  \
       ((expr)op(value)),                       \

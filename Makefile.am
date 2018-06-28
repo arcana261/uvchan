@@ -9,8 +9,13 @@ EXTRA_DIST = \
 	libuvchan.pc
 
 # include libuv as dependency
-AM_CFLAGS += $(LIBUV_CFLAGS)
+AM_CFLAGS += $(LIBUV_CFLAGS) 
 AM_LDFLAGS += $(LIBUV_LIBS)
+
+# include pthread as dependency
+AM_CFLAGS += $(PTHREAD_CFLAGS)
+AM_LDFLAGS += $(PTHREAD_LIBS)
+CC = $(PTHREAD_CC)
 
 # targets
 lib_LTLIBRARIES = libuvchan-1.la

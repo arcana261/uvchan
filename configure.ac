@@ -18,9 +18,6 @@ AX_CHECK_CFLAG_APPEND([-std=gnu89])
 AX_CHECK_CFLAG_APPEND([-Werror])
 AX_CHECK_CFLAG_APPEND([-Wall])
 AX_CHECK_CFLAG_APPEND([-fPIC])
-AX_CHECK_CFLAG_APPEND([-Wextra])
-AX_CHECK_CFLAG_APPEND([-Wno-unused-parameter])
-AX_CHECK_CFLAG_APPEND([-Wstrict-prototypes])
 
 LT_INIT
 
@@ -58,6 +55,13 @@ PKG_CHECK_MODULES([LIBUV], [libuv >= 1.0 libuv < 2.0], [
 
 # set output headerfile includedir
 # AC_SUBST([includedir], [$includedir/SOMETHING])
+
+# enable some more compiler warnings
+# these warning might mess-up with other AC_LINK_IFELSE
+# and AC_RUN_IFELSE directives
+AX_CHECK_CFLAG_APPEND([-Wextra])
+AX_CHECK_CFLAG_APPEND([-Wno-unused-parameter])
+AX_CHECK_CFLAG_APPEND([-Wstrict-prototypes])
 
 # outputs
 AC_CONFIG_HEADERS([config.h])

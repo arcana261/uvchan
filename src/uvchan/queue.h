@@ -6,8 +6,8 @@
 typedef struct _uvchan_queue {
   void* buffer;
   size_t element_size;
-  size_t head;
-  size_t tail;
+  volatile size_t head;
+  volatile size_t tail;
   size_t capacity_elements;
 } uvchan_queue;
 
