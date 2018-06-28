@@ -44,7 +44,7 @@ AX_DPKG
 PKG_CHECK_MODULES([LIBUV], [libuv >= 0.10])
 
 # set output headerfile includedir
-AC_SUBST([includedir], [$includedir/context])
+# AC_SUBST([includedir], [$includedir/SOMETHING])
 
 # outputs
 AC_CONFIG_HEADERS([config.h])

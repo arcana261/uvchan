@@ -12,19 +12,14 @@ EXTRA_DIST = \
 AM_CFLAGS += $(LIBUV_CFLAGS)
 AM_LDFLAGS += $(LIBUV_LIBS)
 
-# targets
-# lib_LTLIBRARIES = libcontext-1.la
+targets
+lib_LTLIBRARIES = libuvchan-1.la
 
-# libcontext-1.la
-# libcontext_1_la_SOURCES = \
-# 	src/context/valuemap.h \
-# 	src/context/valuemap.c \
-# 	src/context/context.h \
-# 	src/context/context.c \
-# 	src/context/context_root.h \
-# 	src/context/context_root.c \
-# 	src/context/error.h
-# libcontext_1_la_LDFLAGS = $(AM_LDFLAGS) -versioninfo $(LIBVERSION)
+# libuvchan-1.la
+libuvchan_1_la_SOURCES = \
+	src/uvchan/queue.c \
+	src/uvchan/queue.h
+libuvchan_1_la_LDFLAGS = $(AM_LDFLAGS) -versioninfo $(LIBVERSION)
 
 # installation header files
 # include_HEADERS = \
