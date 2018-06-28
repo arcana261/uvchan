@@ -45,7 +45,14 @@ AX_COVERAGE
 AX_DPKG
 
 # resolve libuv
-PKG_CHECK_MODULES([LIBUV], [libuv >= 1.19])
+PKG_CHECK_MODULES([LIBUV], [libuv >= 1.0 libuv < 2.0], [
+    AC_DEFINE([LIBUV_1X], [1], [Use libuv branch 1.x])
+], [
+    PKG_CHECK_MODULES([LIBUV], [libuv >= 0.1 libuv < 1.0], [
+        AC_DEFINE([LIBUV_0X], [1], [Use libuv branch 0.x])
+        AX_RED_WARN([falling back to libuv branch 0.x])
+    ])
+])
 
 # set output headerfile includedir
 # AC_SUBST([includedir], [$includedir/SOMETHING])

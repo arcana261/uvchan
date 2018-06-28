@@ -2,6 +2,7 @@
 #include <testing.h>
 #include <time.h>
 #include <uvchan/chan.h>
+#include "./config.h"
 
 #define ACTION_TYPE_PUSH 0
 #define ACTION_TYPE_CLOSE 1
@@ -151,7 +152,13 @@ void test_full_push_pop(void) {
 
 static void _push_callback(uvchan_handle_t* handle, int ok);
 static void _pop_callback(uvchan_handle_t* handle, void* element, int ok);
+#ifdef LIBUV_0X
+static void _timer_callback(uv_timer_t* handle, int status);
+#elif LIBUV_1X
 static void _timer_callback(uv_timer_t* handle);
+#else
+#error unknown callback for unknown version of libuv
+#endif
 static void _dealloc_callback(uv_handle_t* handle);
 
 void _perform_action(data_t* data) {
@@ -240,8 +247,18 @@ static void _pop_callback(uvchan_handle_t* handle, void* element, int ok) {
   _perform_action(data);
 }
 
+#ifdef LIBUV_0X
+static void _timer_callback(uv_timer_t* handle, int status) {
+#elif LIBUV_1X
 static void _timer_callback(uv_timer_t* handle) {
+#else
+#error unknown callback for unknown version of libuv
+#endif
   data_t* data;
+
+#ifdef LIBUV_0X
+  ((void)status);
+#endif
 
   data = (data_t*)handle->data;
 
@@ -256,21 +273,37 @@ static void _dealloc_callback(uv_handle_t* handle) { free(handle); }
 
 void _test_using(action_t* actions, size_t count, size_t num_elements) {
   data_t data;
-  uv_loop_t loop;
+  uv_loop_t* loop;
 
   data.ch = uvchan_new(num_elements, sizeof(int));
   data.actions = actions;
   data.count = count;
   data.i = 0;
-  uv_loop_init(&loop);
-  data.loop = &loop;
+
+#ifdef LIBUV_0X
+  loop = uv_default_loop();
+#elif LIBUV_1X
+  loop = (uv_loop_t*)malloc(sizeof(uv_loop_t));
+  uv_loop_init(loop);
+#else
+#error unknown operation for unknown version of libuv
+#endif
+  
+  data.loop = loop;
 
   _perform_action(&data);
 
-  T_FALSE(uv_run(&loop, UV_RUN_DEFAULT));
+  T_FALSE(uv_run(loop, UV_RUN_DEFAULT));
 
   uvchan_unref(data.ch);
-  uv_loop_close(&loop);
+
+#ifdef LIBUV_0X
+#elif LIBUV_1X
+  uv_loop_close(loop);
+  free(loop);
+#else
+#error unknown operation for unknown version of libuv
+#endif
 }
 
 void _test_coroutine_using(action_t* routine1, size_t routine1_count,
@@ -278,14 +311,23 @@ void _test_coroutine_using(action_t* routine1, size_t routine1_count,
                            size_t num_elements) {
   data_t routine1_data;
   data_t routine2_data;
-  uv_loop_t loop;
+  uv_loop_t* loop;
 
   routine1_data.ch = uvchan_new(num_elements, sizeof(int));
   routine1_data.actions = routine1;
   routine1_data.count = routine1_count;
   routine1_data.i = 0;
-  uv_loop_init(&loop);
-  routine1_data.loop = &loop;
+
+#ifdef LIBUV_0X
+  loop = uv_default_loop();
+#elif LIBUV_1X
+  loop = (uv_loop_t*)malloc(sizeof(uv_loop_t));
+  uv_loop_init(loop);
+#else
+#error unknown operation for unknown version of libuv
+#endif
+  
+  routine1_data.loop = loop;
 
   routine2_data = routine1_data;
   routine2_data.actions = routine2;
@@ -294,10 +336,17 @@ void _test_coroutine_using(action_t* routine1, size_t routine1_count,
   _perform_action(&routine1_data);
   _perform_action(&routine2_data);
 
-  T_FALSE(uv_run(&loop, UV_RUN_DEFAULT));
+  T_FALSE(uv_run(loop, UV_RUN_DEFAULT));
 
   uvchan_unref(routine1_data.ch);
-  uv_loop_close(&loop);
+
+#ifdef LIBUV_0X
+#elif LIBUV_1X
+  uv_loop_close(loop);
+  free(loop);
+#else
+#error unknown operation for unknown version of libuv
+#endif
 }
 
 int main(int argc, char* argv[]) {

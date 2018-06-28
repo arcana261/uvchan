@@ -1,4 +1,5 @@
 #include <uvchan/chan.h>
+#include "./config.h"
 
 uvchan_t* uvchan_new(size_t num_elements, size_t element_size) {
   uvchan_t* chan;
@@ -39,8 +40,18 @@ void uvchan_handle_init(uv_loop_t* loop, uvchan_handle_t* handle,
   handle->data = 0L;
 }
 
+#ifdef LIBUV_0X
+static void _uvchan_start_push_idle_cb(uv_idle_t* handle, int status) {
+#elif LIBUV_1X
 static void _uvchan_start_push_idle_cb(uv_idle_t* handle) {
+#else
+#error callback not defined for unknown version of libuv
+#endif
   uvchan_handle_t* ch_handle;
+
+#ifdef LIBUV_0X
+  ((void)status);
+#endif
 
   ch_handle = (uvchan_handle_t*)handle;
 
@@ -63,8 +74,18 @@ void uvchan_start_push(uvchan_handle_t* handle, const void* element,
   uv_idle_start((uv_idle_t*)handle, _uvchan_start_push_idle_cb);
 }
 
+#ifdef LIBUV_0X
+static void _uvchan_start_pop_idle_cb(uv_idle_t* handle, int status) {
+#elif LIBUV_1X
 static void _uvchan_start_pop_idle_cb(uv_idle_t* handle) {
+#else
+#error callback not defined for unknown version of libuv
+#endif
   uvchan_handle_t* ch_handle;
+
+#ifdef LIBUV_0X
+  ((void)status);
+#endif
 
   ch_handle = (uvchan_handle_t*)handle;
   ch_handle->ch->polling++;
