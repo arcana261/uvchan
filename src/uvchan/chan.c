@@ -60,9 +60,11 @@ static void _uvchan_start_push_idle_cb(uv_idle_t* handle) {
     uv_idle_stop(handle);
     uvchan_unref(ch_handle->ch);
 
-    ((uvchan_push_cb)(ch_handle->callback))(ch_handle, UVCHAN_ERR_CHANNEL_CLOSED);
+    ((uvchan_push_cb)(ch_handle->callback))(ch_handle,
+                                            UVCHAN_ERR_CHANNEL_CLOSED);
   } else if ((!ch_handle->ch->poll_required || ch_handle->ch->polling) &&
-             (uvchan_queue_push(&ch_handle->ch->queue, ch_handle->element) == UVCHAN_ERR_SUCCESS)) {
+             (uvchan_queue_push(&ch_handle->ch->queue, ch_handle->element) ==
+              UVCHAN_ERR_SUCCESS)) {
     uv_idle_stop(handle);
     uvchan_unref(ch_handle->ch);
 
@@ -100,13 +102,16 @@ static void _uvchan_start_pop_idle_cb(uv_idle_t* handle) {
     ch_handle->ch->polling--;
     uvchan_unref(ch_handle->ch);
 
-    ((uvchan_pop_cb)(ch_handle->callback))(ch_handle, ch_handle->element, UVCHAN_ERR_CHANNEL_CLOSED);
-  } else if (uvchan_queue_pop(&ch_handle->ch->queue, ch_handle->element) == UVCHAN_ERR_SUCCESS) {
+    ((uvchan_pop_cb)(ch_handle->callback))(ch_handle, ch_handle->element,
+                                           UVCHAN_ERR_CHANNEL_CLOSED);
+  } else if (uvchan_queue_pop(&ch_handle->ch->queue, ch_handle->element) ==
+             UVCHAN_ERR_SUCCESS) {
     uv_idle_stop(handle);
     ch_handle->ch->polling--;
     uvchan_unref(ch_handle->ch);
 
-    ((uvchan_pop_cb)(ch_handle->callback))(ch_handle, ch_handle->element, UVCHAN_ERR_SUCCESS);
+    ((uvchan_pop_cb)(ch_handle->callback))(ch_handle, ch_handle->element,
+                                           UVCHAN_ERR_SUCCESS);
   }
 }
 

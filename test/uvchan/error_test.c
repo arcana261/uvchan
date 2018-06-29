@@ -1,13 +1,11 @@
 #include <uvchan/error.h>
 
-#include <testing.h>
 #include <assert.h>
+#include <testing.h>
 
 void test_should_convert_unknown(void) { T_NOT_NULL(uvchan_strerr(-1)); }
 
-void test_success_should_be_zero(void) {
-    assert(UVCHAN_ERR_SUCCESS == 0);
-}
+void test_success_should_be_zero(void) { assert(UVCHAN_ERR_SUCCESS == 0); }
 
 void test_should_convert_every_error(void) {
   int i;

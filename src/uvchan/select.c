@@ -1,3 +1,4 @@
+#include <uvchan/error.h>
 #include <uvchan/select.h>
 
 #include <uv.h>
@@ -31,11 +32,11 @@ int _uvchan_select_handle_indexof(uvchan_select_handle_t* handle, int tag) {
 int uvchan_select_handle_add_push(uvchan_select_handle_t* handle, int tag,
                                   uvchan_t* ch, const void* element) {
   if (handle->count >= kUvChanMaxSelect) {
-    return 0;
+    return UVCHAN_ERR_SELECT_FULL;
   }
 
   if (_uvchan_select_handle_indexof(handle, tag) >= 0) {
-    return 0;
+    return UVCHAN_ERR_SELECT_DUPLICATE_TAG;
   }
 
   handle->tags[handle->count] = tag;
@@ -46,17 +47,17 @@ int uvchan_select_handle_add_push(uvchan_select_handle_t* handle, int tag,
 
   uvchan_ref(ch);
 
-  return 1;
+  return UVCHAN_ERR_SUCCESS;
 }
 
 int uvchan_select_handle_add_pop(uvchan_select_handle_t* handle, int tag,
                                  uvchan_t* ch, void* element) {
   if (handle->count >= kUvChanMaxSelect) {
-    return 0;
+    return UVCHAN_ERR_SELECT_FULL;
   }
 
   if (_uvchan_select_handle_indexof(handle, tag) >= 0) {
-    return 0;
+    return UVCHAN_ERR_SELECT_DUPLICATE_TAG;
   }
 
   handle->tags[handle->count] = tag;
@@ -67,14 +68,14 @@ int uvchan_select_handle_add_pop(uvchan_select_handle_t* handle, int tag,
 
   uvchan_ref(ch);
 
-  return 1;
+  return UVCHAN_ERR_SUCCESS;
 }
 
 int uvchan_select_handle_add_default(uvchan_select_handle_t* handle, int tag) {
   handle->has_default = 1;
   handle->default_tag = tag;
 
-  return 1;
+  return UVCHAN_ERR_SUCCESS;
 }
 
 void _uvchan_start_select_fire(uvchan_select_handle_t* handle) {

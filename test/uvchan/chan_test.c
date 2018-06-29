@@ -31,11 +31,14 @@ action_t make_action(int type, int value, int expected_result,
 }
 
 #define MAKE_ACTION_CLOSE() make_action(ACTION_TYPE_CLOSE, 0, 0, 0)
-#define MAKE_ACTION_PUSH(value) make_action(ACTION_TYPE_PUSH, (value), UVCHAN_ERR_SUCCESS, 0)
+#define MAKE_ACTION_PUSH(value) \
+  make_action(ACTION_TYPE_PUSH, (value), UVCHAN_ERR_SUCCESS, 0)
 #define MAKE_ACTION_FAILING_PUSH(value) \
   make_action(ACTION_TYPE_PUSH, (value), UVCHAN_ERR_CHANNEL_CLOSED, 0)
-#define MAKE_ACTION_POP(value) make_action(ACTION_TYPE_POP, 0, UVCHAN_ERR_SUCCESS, (value))
-#define MAKE_ACTION_FAILING_POP() make_action(ACTION_TYPE_POP, 0, UVCHAN_ERR_CHANNEL_CLOSED, 0)
+#define MAKE_ACTION_POP(value) \
+  make_action(ACTION_TYPE_POP, 0, UVCHAN_ERR_SUCCESS, (value))
+#define MAKE_ACTION_FAILING_POP() \
+  make_action(ACTION_TYPE_POP, 0, UVCHAN_ERR_CHANNEL_CLOSED, 0)
 #define MAKE_ACTION_RECORD_TIME() make_action(ACTION_TYPE_RECORD_TIME, 0, 0, 0)
 #define MAKE_ACTION_ASSERT_TIME_GT(value) \
   make_action(ACTION_TYPE_ASSERT_TIME_GT, (value), 0, 0)
