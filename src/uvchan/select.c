@@ -17,25 +17,25 @@ void uvchan_select_handle_init(uv_loop_t* loop, uvchan_select_handle_t* handle,
 }
 
 int _uvchan_select_handle_indexof(uvchan_select_handle_t* handle, int tag) {
-    int i;
+  int i;
 
-    for (i=0; i < handle->count;i++) {
-        if (handle->tags[i] == tag) {
-            return i;
-        }
+  for (i = 0; i < handle->count; i++) {
+    if (handle->tags[i] == tag) {
+      return i;
     }
+  }
 
-    return -1;
+  return -1;
 }
 
-int uvchan_select_handle_add_push(uvchan_select_handle_t* handle,
-                                  int tag, uvchan_t* ch, const void* element) {
+int uvchan_select_handle_add_push(uvchan_select_handle_t* handle, int tag,
+                                  uvchan_t* ch, const void* element) {
   if (handle->count >= kUvChanMaxSelect) {
     return 0;
   }
 
   if (_uvchan_select_handle_indexof(handle, tag) >= 0) {
-      return 0;
+    return 0;
   }
 
   handle->tags[handle->count] = tag;
@@ -49,14 +49,14 @@ int uvchan_select_handle_add_push(uvchan_select_handle_t* handle,
   return 1;
 }
 
-int uvchan_select_handle_add_pop(uvchan_select_handle_t* handle,
-                                 int tag, uvchan_t* ch, void* element) {
+int uvchan_select_handle_add_pop(uvchan_select_handle_t* handle, int tag,
+                                 uvchan_t* ch, void* element) {
   if (handle->count >= kUvChanMaxSelect) {
     return 0;
   }
 
   if (_uvchan_select_handle_indexof(handle, tag) >= 0) {
-      return 0;
+    return 0;
   }
 
   handle->tags[handle->count] = tag;
@@ -145,19 +145,19 @@ static void _uvchan_start_select_idle_cb(uv_idle_t* handle) {
   }
 
   if (handle->has_default) {
-      handle->captured_default = 1;
-      handle->ok = 1;
+    handle->captured_default = 1;
+    handle->ok = 1;
 
-      _uvchan_start_select_fire(handle);
-      return;
+    _uvchan_start_select_fire(handle);
+    return;
   }
 }
 
 int uvchan_select_start(uvchan_select_handle_t* handle) {
-    if (handle->count < 1) {
-        return 0;
-    }
+  if (handle->count < 1) {
+    return 0;
+  }
 
-    uv_idle_start((uv_idle_t*)handle, _uvchan_start_select_idle_cb);
-    return 1;
+  uv_idle_start((uv_idle_t*)handle, _uvchan_start_select_idle_cb);
+  return 1;
 }

@@ -7,7 +7,7 @@ void test_pop_should_not_read_from_empty(void) {
   int result;
 
   uvchan_queue_init(&q, 0, sizeof(int));
-  T_FALSE(uvchan_queue_pop(&q, &result));
+  T_CMPINT(uvchan_queue_pop(&q, &result), ==, UVCHAN_ERR_QUEUE_EMPTY);
   uvchan_queue_destroy(&q);
 }
 
@@ -18,7 +18,7 @@ void test_push_should_not_push_to_empty(void) {
   value = 5;
 
   uvchan_queue_init(&q, 0, sizeof(int));
-  T_FALSE(uvchan_queue_push(&q, &value));
+  T_CMPINT(uvchan_queue_push(&q, &value), ==, UVCHAN_ERR_QUEUE_FULL);
   uvchan_queue_destroy(&q);
 }
 
@@ -30,10 +30,10 @@ void test_push_pop_single_element(void) {
   value = 5;
 
   uvchan_queue_init(&q, 10, sizeof(int));
-  T_TRUE(uvchan_queue_push(&q, &value));
-  T_TRUE(uvchan_queue_pop(&q, &result));
+  T_OK(uvchan_queue_push(&q, &value));
+  T_OK(uvchan_queue_pop(&q, &result));
   T_CMPINT(5, ==, result);
-  T_FALSE(uvchan_queue_pop(&q, &result));
+  T_CMPINT(uvchan_queue_pop(&q, &result), ==, UVCHAN_ERR_QUEUE_EMPTY);
   uvchan_queue_destroy(&q);
 }
 
@@ -44,14 +44,14 @@ void test_push_pop_full(void) {
 
   uvchan_queue_init(&q, 10, sizeof(int));
   for (i = 0; i < 10; i++) {
-    T_TRUE(uvchan_queue_push(&q, &i));
+    T_OK(uvchan_queue_push(&q, &i));
   }
-  T_FALSE(uvchan_queue_push(&q, &i));
+  T_CMPINT(uvchan_queue_push(&q, &i), ==, UVCHAN_ERR_QUEUE_FULL);
   for (i = 0; i < 10; i++) {
-    T_TRUE(uvchan_queue_pop(&q, &result));
+    T_OK(uvchan_queue_pop(&q, &result));
     T_CMPINT(result, ==, i);
   }
-  T_FALSE(uvchan_queue_pop(&q, &result));
+  T_CMPINT(uvchan_queue_pop(&q, &result), ==, UVCHAN_ERR_QUEUE_EMPTY);
   uvchan_queue_destroy(&q);
 }
 
@@ -63,7 +63,7 @@ void* _test_ipc_safety_producer(void* data) {
   i = 0;
 
   while (i < 100000) {
-    if (!uvchan_queue_push(q, &i)) {
+    if (uvchan_queue_push(q, &i)) {
       sched_yield();
     } else {
       i++;
@@ -82,7 +82,7 @@ void* _test_ipc_safety_consumer(void* data) {
   i = 0;
 
   while (i < 100000) {
-    if (!uvchan_queue_pop(q, &value)) {
+    if (uvchan_queue_pop(q, &value)) {
       sched_yield();
     } else {
       T_CMPINT(value, ==, i);
@@ -100,10 +100,10 @@ void test_ipc_safety(void) {
 
   uvchan_queue_init(&q, 10, sizeof(int));
 
-  T_ZERO(pthread_create(&consumer, NULL, _test_ipc_safety_consumer, &q));
-  T_ZERO(pthread_create(&producer, NULL, _test_ipc_safety_producer, &q));
-  T_ZERO(pthread_join(consumer, NULL));
-  T_ZERO(pthread_join(producer, NULL));
+  T_OK(pthread_create(&consumer, NULL, _test_ipc_safety_consumer, &q));
+  T_OK(pthread_create(&producer, NULL, _test_ipc_safety_producer, &q));
+  T_OK(pthread_join(consumer, NULL));
+  T_OK(pthread_join(producer, NULL));
 }
 
 int main(int argc, char* argv[]) {

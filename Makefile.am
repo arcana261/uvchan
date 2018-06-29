@@ -22,6 +22,8 @@ lib_LTLIBRARIES = libuvchan-1.la
 
 # libuvchan-1.la
 libuvchan_1_la_SOURCES = \
+	src/uvchan/error.h \
+	src/uvchan/error.c \
 	src/uvchan/queue.c \
 	src/uvchan/queue.h \
 	src/uvchan/chan.h \
@@ -40,8 +42,13 @@ pkgconfiglib_DATA = libuvchan.pc
 
 # tests
 check_PROGRAMS = \
+	test/uvchan/error_test \
 	test/uvchan/queue_test \
 	test/uvchan/chan_test
+
+# test/uvchan/error_test
+test_uvchan_error_test_SOURCES = test/uvchan/error_test.c
+test_uvchan_error_test_LDADD = $(lib_LTLIBRARIES)
 
 # test/uvchan/queue_test
 test_uvchan_queue_test_SOURCES = test/uvchan/queue_test.c

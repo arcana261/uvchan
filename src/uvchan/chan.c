@@ -1,4 +1,5 @@
 #include <uvchan/chan.h>
+#include <uvchan/error.h>
 #include "./config.h"
 
 uvchan_t* uvchan_new(size_t num_elements, size_t element_size) {
@@ -59,13 +60,13 @@ static void _uvchan_start_push_idle_cb(uv_idle_t* handle) {
     uv_idle_stop(handle);
     uvchan_unref(ch_handle->ch);
 
-    ((uvchan_push_cb)(ch_handle->callback))(ch_handle, 0);
+    ((uvchan_push_cb)(ch_handle->callback))(ch_handle, UVCHAN_ERR_CHANNEL_CLOSED);
   } else if ((!ch_handle->ch->poll_required || ch_handle->ch->polling) &&
-             uvchan_queue_push(&ch_handle->ch->queue, ch_handle->element)) {
+             (uvchan_queue_push(&ch_handle->ch->queue, ch_handle->element) == UVCHAN_ERR_SUCCESS)) {
     uv_idle_stop(handle);
     uvchan_unref(ch_handle->ch);
 
-    ((uvchan_push_cb)(ch_handle->callback))(ch_handle, 1);
+    ((uvchan_push_cb)(ch_handle->callback))(ch_handle, UVCHAN_ERR_SUCCESS);
   }
 }
 
@@ -99,13 +100,13 @@ static void _uvchan_start_pop_idle_cb(uv_idle_t* handle) {
     ch_handle->ch->polling--;
     uvchan_unref(ch_handle->ch);
 
-    ((uvchan_pop_cb)(ch_handle->callback))(ch_handle, ch_handle->element, 0);
-  } else if (uvchan_queue_pop(&ch_handle->ch->queue, ch_handle->element)) {
+    ((uvchan_pop_cb)(ch_handle->callback))(ch_handle, ch_handle->element, UVCHAN_ERR_CHANNEL_CLOSED);
+  } else if (uvchan_queue_pop(&ch_handle->ch->queue, ch_handle->element) == UVCHAN_ERR_SUCCESS) {
     uv_idle_stop(handle);
     ch_handle->ch->polling--;
     uvchan_unref(ch_handle->ch);
 
-    ((uvchan_pop_cb)(ch_handle->callback))(ch_handle, ch_handle->element, 1);
+    ((uvchan_pop_cb)(ch_handle->callback))(ch_handle, ch_handle->element, UVCHAN_ERR_SUCCESS);
   }
 }
 

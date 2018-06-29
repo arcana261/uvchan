@@ -88,6 +88,7 @@ void _t_run(void (*fn)(void), const char* name) {
 #define T_ASSERT(expr) (_T_ASSERT((expr), #expr))
 #define T_TRUE(expr) (_T_ASSERT((expr), "expected \"" #expr "\" to be true"))
 #define T_FALSE(expr) (_T_ASSERT(!(expr), "expected \"" #expr "\" to be false"))
+#define T_OK(expr) (_T_ASSERT(!(expr), "expected \"" #expr "\" to be ok"))
 #define T_ZERO(expr) (_T_ASSERT(!(expr), "expected \"" #expr "\" to be zero"))
 #define T_CMPINT(expr, op, value)              \
   (_T_ASSERT(                                  \
@@ -99,6 +100,22 @@ void _t_run(void (*fn)(void), const char* name) {
              "expected \"" #expr                                     \
              "\"[=%X] to be equal to %X" _T_COMMA _T_PARAN_OPEN expr \
                  _T_PARAN_CLOSE _T_COMMA value))
+#define T_NULL(expr)             \
+  (_T_ASSERT(!(expr),            \
+             "expected \"" #expr \
+             "\"[=%X] to be null" _T_COMMA _T_PARAN_OPEN expr _T_PARAN_CLOSE))
+#define T_NOT_NULL(expr) \
+  (_T_ASSERT((expr), "expected \"" #expr "\" to non-null"))
+#define T_EQUAL_STR(expr, value)                                             \
+  (_T_ASSERT(!(strcmp((expr), (value))),                                     \
+             "expected \"" #expr                                             \
+             "\"[=\'%s\"] to be equal to \"%s\"" _T_COMMA _T_PARAN_OPEN expr \
+                 _T_PARAN_CLOSE _T_COMMA value))
+#define T_NOT_EQUAL_STR(expr, value)                                        \
+  (_T_ASSERT((strcmp((expr), (value))),                                     \
+             "expected \"" #expr                                            \
+             "\"[=\'%s\"] to not be equal to \"%s\"" _T_COMMA _T_PARAN_OPEN \
+                 expr _T_PARAN_CLOSE _T_COMMA value))
 
 #define T_RUN(test) _t_run(test, #test)
 

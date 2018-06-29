@@ -1,3 +1,10 @@
+# The contents of this file are partially taken
+# from https://github.com/eiichiroi/autotools-unittest
+# 
+# Copyright (c) 2012, Eiichiro Iwata
+# All rights reserved.
+#
+
 AC_DEFUN([AX_COVERAGE],
 [
   AC_ARG_VAR([GCOV], [Coverage testing command])

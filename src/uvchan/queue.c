@@ -1,4 +1,4 @@
-#include "uvchan/queue.h"
+#include <uvchan/queue.h>
 
 #include <string.h>
 
@@ -18,30 +18,30 @@ void uvchan_queue_init(uvchan_queue* queue, size_t num_elements,
 
 void uvchan_queue_destroy(uvchan_queue* queue) { free(queue->buffer); }
 
-int uvchan_queue_push(uvchan_queue* queue, const void* element) {
+uvchan_error_t uvchan_queue_push(uvchan_queue* queue, const void* element) {
   if (queue->head == queue->tail) {
-    return 0;
+    return UVCHAN_ERR_QUEUE_FULL;
   }
 
   memcpy(MEM_LOCATION(queue->buffer, queue->head, queue->element_size), element,
          queue->element_size);
   queue->head = INCREMENT(queue->head, queue->capacity_elements);
 
-  return 1;
+  return UVCHAN_ERR_SUCCESS;
 }
 
-int uvchan_queue_pop(uvchan_queue* queue, void* element) {
+uvchan_error_t uvchan_queue_pop(uvchan_queue* queue, void* element) {
   size_t next;
 
   next = INCREMENT(queue->tail, queue->capacity_elements);
 
   if (next == queue->head) {
-    return 0;
+    return UVCHAN_ERR_QUEUE_EMPTY;
   }
 
   memcpy(element, MEM_LOCATION(queue->buffer, next, queue->element_size),
          queue->element_size);
   queue->tail = next;
 
-  return 1;
+  return UVCHAN_ERR_SUCCESS;
 }
