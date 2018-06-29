@@ -24,7 +24,7 @@ typedef struct _uvchan_select_handle_t {
   int has_default;
   int default_tag;
   int captured_default;
-  int ok;
+  int err;
 
   void* data;
 } uvchan_select_handle_t;
@@ -42,7 +42,7 @@ int uvchan_select_start(uvchan_select_handle_t* handle);
 
 int uvchan_select_handle_get_result_tag(uvchan_select_handle_t* handle);
 void* uvchan_select_handle_get_result_element(uvchan_select_handle_t* handle);
-int uvchan_select_handle_get_result_ok(uvchan_select_handle_t* handle);
+int uvchan_select_handle_get_result_error(uvchan_select_handle_t* handle);
 void* uvchan_select_handle_get_element_for_tag(uvchan_select_handle_t* handle,
                                                int tag);
 

@@ -78,6 +78,34 @@ int uvchan_select_handle_add_default(uvchan_select_handle_t* handle, int tag) {
   return UVCHAN_ERR_SUCCESS;
 }
 
+int uvchan_select_handle_remove_tag(uvchan_select_handle_t* handle, int tag) {
+  int i;
+  int j;
+  int last_index;
+
+  i = _uvchan_select_handle_indexof(handle, tag);
+  if (i < 0) {
+    return UVCHAN_ERR_SELECT_TAG_NOTFOUND;
+  }
+
+  uvchan_unref(handle->channels[i]);
+
+  j = i + 1;
+  while (j < handle->count) {
+    handle->channels[i] = handle->channels[j];
+    handle->tags[i] = handle->tags[j];
+    handle->operations[i] = handle->tags[j];
+    handle->elements[i] = handle->elements[j];
+
+    i = j;
+    j = i + 1;
+  }
+
+  handle->count--;
+
+  return UVCHAN_ERR_SUCCESS;
+}
+
 void _uvchan_start_select_fire(uvchan_select_handle_t* handle) {
   int i;
 
@@ -114,7 +142,7 @@ static void _uvchan_start_select_idle_cb(uv_idle_t* handle) {
     if (ch->closed) {
       handle->index = i;
       handle->captured_default = 0;
-      handle->ok = 0;
+      handle->err = UVCHAN_ERR_CHANNEL_CLOSED;
 
       _uvchan_start_select_fire(handle);
       return;
@@ -123,20 +151,20 @@ static void _uvchan_start_select_idle_cb(uv_idle_t* handle) {
     switch (handle->operations[i]) {
       case _UVCHAN_OPERATION_PUSH:
         if ((!ch->poll_required || ch->polling) &&
-            uvchan_queue_push(&ch->queue, element)) {
+            (uvchan_queue_push(&ch->queue, element) == UVCHAN_ERR_SUCCESS)) {
           handle->index = i;
           handle->captured_default = 0;
-          handle->ok = 1;
+          handle->err = UVCHAN_ERR_SUCCESS;
 
           _uvchan_start_select_fire(handle);
           return;
         }
         break;
       case _UVCHAN_OPERATION_POP:
-        if (uvchan_queue_pop(&ch->queue, element)) {
+        if (uvchan_queue_pop(&ch->queue, element) == UVCHAN_ERR_SUCCESS) {
           handle->index = i;
           handle->captured_default = 0;
-          handle->ok = 1;
+          handle->err = UVCHAN_ERR_SUCCESS;
 
           _uvchan_start_select_fire(handle);
           return;
@@ -147,7 +175,7 @@ static void _uvchan_start_select_idle_cb(uv_idle_t* handle) {
 
   if (handle->has_default) {
     handle->captured_default = 1;
-    handle->ok = 1;
+    handle->err = UVCHAN_ERR_SUCCESS;
 
     _uvchan_start_select_fire(handle);
     return;
@@ -156,9 +184,15 @@ static void _uvchan_start_select_idle_cb(uv_idle_t* handle) {
 
 int uvchan_select_start(uvchan_select_handle_t* handle) {
   if (handle->count < 1) {
-    return 0;
+    return UVCHAN_ERR_SELECT_EMPTY;
   }
 
   uv_idle_start((uv_idle_t*)handle, _uvchan_start_select_idle_cb);
-  return 1;
+  return UVCHAN_ERR_SUCCESS;
+}
+
+int uvchan_select_handle_get_result_tag(uvchan_select_handle_t* handle) {
+  if (handle->captured_default) {
+    return handle->default_tag;
+  }
 }

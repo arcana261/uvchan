@@ -14,6 +14,12 @@ const char* uvchan_strerr(int code) {
       return "maximum number of tags reached listening on select";
     case UVCHAN_ERR_SELECT_DUPLICATE_TAG:
       return "tag already exists on select structure";
+    case UVCHAN_ERR_SELECT_EMPTY:
+      return "no tags listed on select structure";
+    case UVCHAN_ERR_SELECT_TAG_NOTFOUND:
+      return "requested tag was not found";
+    case UVCHAN_ERR_SELECT_NORESULT:
+      return "select structure has no result yet";
     default:
       return "unknown";
   }

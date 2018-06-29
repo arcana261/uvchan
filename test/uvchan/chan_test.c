@@ -15,11 +15,11 @@
 typedef struct _action_t {
   int type;
   int value;
-  int expected_result;
+  uvchan_error_t expected_result;
   int expected_value;
 } action_t;
 
-action_t make_action(int type, int value, int expected_result,
+action_t make_action(int type, int value, uvchan_error_t expected_result,
                      int expected_value) {
   action_t result;
   result.type = type;
@@ -153,8 +153,9 @@ void test_full_push_pop(void) {
   _test_using(actions, sizeof(actions) / sizeof(action_t), 3);
 }
 
-static void _push_callback(uvchan_handle_t* handle, int ok);
-static void _pop_callback(uvchan_handle_t* handle, void* element, int ok);
+static void _push_callback(uvchan_handle_t* handle, uvchan_error_t ok);
+static void _pop_callback(uvchan_handle_t* handle, void* element,
+                          uvchan_error_t ok);
 #ifdef LIBUV_0X
 static void _timer_callback(uv_timer_t* handle, int status);
 #elif LIBUV_1X
@@ -220,7 +221,7 @@ void _perform_action(data_t* data) {
   }
 }
 
-static void _push_callback(uvchan_handle_t* handle, int ok) {
+static void _push_callback(uvchan_handle_t* handle, uvchan_error_t ok) {
   data_t* data;
   action_t* action;
 
@@ -234,7 +235,8 @@ static void _push_callback(uvchan_handle_t* handle, int ok) {
   _perform_action(data);
 }
 
-static void _pop_callback(uvchan_handle_t* handle, void* element, int ok) {
+static void _pop_callback(uvchan_handle_t* handle, void* element,
+                          uvchan_error_t ok) {
   data_t* data;
   action_t* action;
 
