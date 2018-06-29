@@ -93,17 +93,24 @@ void test_pop_after_close_should_fail(void) {
 }
 
 void test_push_polling(void) {
-  action_t push_routine[3];
-  action_t pop_routine[4];
+  action_t push_routine[6];
+  action_t pop_routine[8];
 
   push_routine[0] = MAKE_ACTION_RECORD_TIME();
   push_routine[1] = MAKE_ACTION_PUSH(12);
   push_routine[2] = MAKE_ACTION_ASSERT_TIME_GT(1000);
+  push_routine[3] = MAKE_ACTION_RECORD_TIME();
+  push_routine[4] = MAKE_ACTION_PUSH(20);
+  push_routine[5] = MAKE_ACTION_ASSERT_TIME_GT(1000);
 
   pop_routine[0] = MAKE_ACTION_SLEEP(1000);
   pop_routine[1] = MAKE_ACTION_RECORD_TIME();
   pop_routine[2] = MAKE_ACTION_POP(12);
-  pop_routine[3] = MAKE_ACTION_ASSERT_TIME_LT(1000);
+  pop_routine[3] = MAKE_ACTION_SLEEP(1000);
+  pop_routine[4] = MAKE_ACTION_RECORD_TIME();
+  pop_routine[5] = MAKE_ACTION_ASSERT_TIME_LT(1000);
+  pop_routine[6] = MAKE_ACTION_POP(20);
+  pop_routine[7] = MAKE_ACTION_ASSERT_TIME_LT(1000);
 
   _test_coroutine_using(push_routine, sizeof(push_routine) / sizeof(action_t),
                         pop_routine, sizeof(pop_routine) / sizeof(action_t), 0);
