@@ -1,6 +1,6 @@
+#include <pthread.h>
 #include <testing.h>
 #include <uvchan/queue.h>
-#include <pthread.h>
 
 void test_pop_should_not_read_from_empty(void) {
   uvchan_queue q;
@@ -56,54 +56,54 @@ void test_push_pop_full(void) {
 }
 
 void* _test_ipc_safety_producer(void* data) {
-    uvchan_queue* q;
-    int i;
+  uvchan_queue* q;
+  int i;
 
-    q = (uvchan_queue*)data;
-    i = 0;
+  q = (uvchan_queue*)data;
+  i = 0;
 
-    while (i < 100000) {
-        if (!uvchan_queue_push(q, &i)) {
-            sched_yield();
-        } else {
-            i++;
-        }
+  while (i < 100000) {
+    if (!uvchan_queue_push(q, &i)) {
+      sched_yield();
+    } else {
+      i++;
     }
+  }
 
-    return 0L;
+  return 0L;
 }
 
 void* _test_ipc_safety_consumer(void* data) {
-    uvchan_queue* q;
-    int i;
-    int value;
+  uvchan_queue* q;
+  int i;
+  int value;
 
-    q = (uvchan_queue*)data;
-    i = 0;
+  q = (uvchan_queue*)data;
+  i = 0;
 
-    while (i < 100000) {
-        if (!uvchan_queue_pop(q, &value)) {
-            sched_yield();
-        } else {
-            T_CMPINT(value, ==, i);
-            i++;
-        }
+  while (i < 100000) {
+    if (!uvchan_queue_pop(q, &value)) {
+      sched_yield();
+    } else {
+      T_CMPINT(value, ==, i);
+      i++;
     }
+  }
 
-    return 0L;
+  return 0L;
 }
 
 void test_ipc_safety(void) {
-    pthread_t consumer;
-    pthread_t producer;
-    uvchan_queue q;
+  pthread_t consumer;
+  pthread_t producer;
+  uvchan_queue q;
 
-    uvchan_queue_init(&q, 10, sizeof(int));
+  uvchan_queue_init(&q, 10, sizeof(int));
 
-    T_ZERO(pthread_create(&consumer, NULL, _test_ipc_safety_consumer, &q));
-    T_ZERO(pthread_create(&producer, NULL, _test_ipc_safety_producer, &q));
-    T_ZERO(pthread_join(consumer, NULL));
-    T_ZERO(pthread_join(producer, NULL));
+  T_ZERO(pthread_create(&consumer, NULL, _test_ipc_safety_consumer, &q));
+  T_ZERO(pthread_create(&producer, NULL, _test_ipc_safety_producer, &q));
+  T_ZERO(pthread_join(consumer, NULL));
+  T_ZERO(pthread_join(producer, NULL));
 }
 
 int main(int argc, char* argv[]) {

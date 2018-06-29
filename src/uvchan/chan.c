@@ -57,11 +57,13 @@ static void _uvchan_start_push_idle_cb(uv_idle_t* handle) {
 
   if (ch_handle->ch->closed) {
     uv_idle_stop(handle);
+    uvchan_unref(ch_handle->ch);
 
     ((uvchan_push_cb)(ch_handle->callback))(ch_handle, 0);
   } else if ((!ch_handle->ch->poll_required || ch_handle->ch->polling) &&
              uvchan_queue_push(&ch_handle->ch->queue, ch_handle->element)) {
     uv_idle_stop(handle);
+    uvchan_unref(ch_handle->ch);
 
     ((uvchan_push_cb)(ch_handle->callback))(ch_handle, 1);
   }
@@ -71,6 +73,8 @@ void uvchan_start_push(uvchan_handle_t* handle, const void* element,
                        uvchan_push_cb cb) {
   handle->element = (void*)element;
   handle->callback = (void*)cb;
+  uvchan_ref(handle->ch);
+
   uv_idle_start((uv_idle_t*)handle, _uvchan_start_push_idle_cb);
 }
 
@@ -93,11 +97,13 @@ static void _uvchan_start_pop_idle_cb(uv_idle_t* handle) {
   if (ch_handle->ch->closed) {
     uv_idle_stop(handle);
     ch_handle->ch->polling--;
+    uvchan_unref(ch_handle->ch);
 
     ((uvchan_pop_cb)(ch_handle->callback))(ch_handle, ch_handle->element, 0);
   } else if (uvchan_queue_pop(&ch_handle->ch->queue, ch_handle->element)) {
     uv_idle_stop(handle);
     ch_handle->ch->polling--;
+    uvchan_unref(ch_handle->ch);
 
     ((uvchan_pop_cb)(ch_handle->callback))(ch_handle, ch_handle->element, 1);
   }
@@ -107,5 +113,7 @@ void uvchan_start_pop(uvchan_handle_t* handle, void* element,
                       uvchan_pop_cb cb) {
   handle->element = element;
   handle->callback = (void*)cb;
+  uvchan_ref(handle->ch);
+
   uv_idle_start((uv_idle_t*)handle, _uvchan_start_pop_idle_cb);
 }
