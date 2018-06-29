@@ -39,4 +39,4 @@ void uvchan_start_push(uvchan_handle_t* handle, const void* buffer,
                        uvchan_push_cb cb);
 void uvchan_start_pop(uvchan_handle_t* handle, void* buffer, uvchan_pop_cb cb);
 
-#endif  // UVCHAN_UVCHAN_H__
+#endif  // UVCHAN_CHAN_H__

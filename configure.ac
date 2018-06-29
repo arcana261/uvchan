@@ -1,6 +1,6 @@
 AC_PREREQ([2.69])
-AC_INIT([libuvchan], [1.0.0], [https://github.com/arcana261/uvchan/issues])
-AC_SUBST([LIBVERSION], [1:0:0])
+AC_INIT([libuvchan], [0.1.0], [https://github.com/arcana261/uvchan/issues])
+AC_SUBST([LIBVERSION], [0:1:0])
 
 # check file exists
 # AC_CONFIG_SRCDIR([src/hello.c])

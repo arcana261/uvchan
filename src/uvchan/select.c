@@ -11,10 +11,7 @@ void uvchan_select_handle_init(uv_loop_t* loop, uvchan_select_handle_t* handle,
 
   handle->count = 0;
   handle->has_default = 0;
-  handle->index = 0;
-  handle->captured_default = 0;
   handle->callback = cb;
-  handle->ok = 0;
 }
 
 int _uvchan_select_handle_indexof(uvchan_select_handle_t* handle, int tag) {
@@ -81,7 +78,6 @@ int uvchan_select_handle_add_default(uvchan_select_handle_t* handle, int tag) {
 int uvchan_select_handle_remove_tag(uvchan_select_handle_t* handle, int tag) {
   int i;
   int j;
-  int last_index;
 
   i = _uvchan_select_handle_indexof(handle, tag);
   if (i < 0) {
@@ -106,7 +102,8 @@ int uvchan_select_handle_remove_tag(uvchan_select_handle_t* handle, int tag) {
   return UVCHAN_ERR_SUCCESS;
 }
 
-void _uvchan_start_select_fire(uvchan_select_handle_t* handle) {
+void _uvchan_start_select_fire(uvchan_select_handle_t* handle, int tag,
+                               uvchan_error_t err) {
   int i;
 
   uv_idle_stop((uv_idle_t*)handle);
@@ -114,7 +111,7 @@ void _uvchan_start_select_fire(uvchan_select_handle_t* handle) {
     uvchan_unref(handle->channels[i]);
   }
 
-  handle->callback(handle);
+  handle->callback(handle, tag, err);
 }
 
 #ifdef LIBUV_0X
@@ -140,11 +137,8 @@ static void _uvchan_start_select_idle_cb(uv_idle_t* handle) {
     element = handle->elements[i];
 
     if (ch->closed) {
-      handle->index = i;
-      handle->captured_default = 0;
-      handle->err = UVCHAN_ERR_CHANNEL_CLOSED;
-
-      _uvchan_start_select_fire(handle);
+      _uvchan_start_select_fire(handle, handle->tags[i],
+                                UVCHAN_ERR_CHANNEL_CLOSED);
       return;
     }
 
@@ -152,21 +146,15 @@ static void _uvchan_start_select_idle_cb(uv_idle_t* handle) {
       case _UVCHAN_OPERATION_PUSH:
         if ((!ch->poll_required || ch->polling) &&
             (uvchan_queue_push(&ch->queue, element) == UVCHAN_ERR_SUCCESS)) {
-          handle->index = i;
-          handle->captured_default = 0;
-          handle->err = UVCHAN_ERR_SUCCESS;
-
-          _uvchan_start_select_fire(handle);
+          _uvchan_start_select_fire(handle, handle->tags[i],
+                                    UVCHAN_ERR_SUCCESS);
           return;
         }
         break;
       case _UVCHAN_OPERATION_POP:
         if (uvchan_queue_pop(&ch->queue, element) == UVCHAN_ERR_SUCCESS) {
-          handle->index = i;
-          handle->captured_default = 0;
-          handle->err = UVCHAN_ERR_SUCCESS;
-
-          _uvchan_start_select_fire(handle);
+          _uvchan_start_select_fire(handle, handle->tags[i],
+                                    UVCHAN_ERR_SUCCESS);
           return;
         }
         break;
@@ -174,25 +162,16 @@ static void _uvchan_start_select_idle_cb(uv_idle_t* handle) {
   }
 
   if (handle->has_default) {
-    handle->captured_default = 1;
-    handle->err = UVCHAN_ERR_SUCCESS;
-
-    _uvchan_start_select_fire(handle);
+    _uvchan_start_select_fire(handle, handle->default_tag, UVCHAN_ERR_SUCCESS);
     return;
   }
 }
 
-int uvchan_select_start(uvchan_select_handle_t* handle) {
+int uvchan_select_handle_start(uvchan_select_handle_t* handle) {
   if (handle->count < 1) {
     return UVCHAN_ERR_SELECT_EMPTY;
   }
 
   uv_idle_start((uv_idle_t*)handle, _uvchan_start_select_idle_cb);
   return UVCHAN_ERR_SUCCESS;
-}
-
-int uvchan_select_handle_get_result_tag(uvchan_select_handle_t* handle) {
-  if (handle->captured_default) {
-    return handle->default_tag;
-  }
 }
