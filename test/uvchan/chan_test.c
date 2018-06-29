@@ -61,10 +61,11 @@ void _test_coroutine_using(action_t* routine1, size_t routine1_count,
                            size_t num_elements);
 
 void test_single_push_should_succeed(void) {
-  action_t actions[3];
+  action_t actions[4];
   actions[0] = MAKE_ACTION_RECORD_TIME();
   actions[1] = MAKE_ACTION_PUSH(7);
   actions[2] = MAKE_ACTION_ASSERT_TIME_LT(1000);
+  actions[3] = MAKE_ACTION_POP(7);
 
   _test_using(actions, sizeof(actions) / sizeof(action_t), 1);
 }
@@ -151,6 +152,21 @@ void test_full_push_pop(void) {
   actions[7] = MAKE_ACTION_ASSERT_TIME_LT(1000);
 
   _test_using(actions, sizeof(actions) / sizeof(action_t), 3);
+}
+
+void test_closing_should_not_interrupt_pulling(void) {
+  action_t actions[8];
+
+  actions[0] = MAKE_ACTION_RECORD_TIME();
+  actions[1] = MAKE_ACTION_PUSH(1);
+  actions[2] = MAKE_ACTION_PUSH(2);
+  actions[3] = MAKE_ACTION_CLOSE();
+  actions[4] = MAKE_ACTION_POP(1);
+  actions[5] = MAKE_ACTION_POP(2);
+  actions[6] = MAKE_ACTION_FAILING_POP();
+  actions[7] = MAKE_ACTION_ASSERT_TIME_LT(1000);
+
+  _test_using(actions, sizeof(actions) / sizeof(action_t), 2);
 }
 
 static void _push_callback(uvchan_handle_t* handle, uvchan_error_t ok);
@@ -363,6 +379,7 @@ int main(int argc, char* argv[]) {
   T_RUN(test_push_polling);
   T_RUN(test_single_push_pop);
   T_RUN(test_full_push_pop);
+  T_RUN(test_closing_should_not_interrupt_pulling);
 
   return 0;
 }

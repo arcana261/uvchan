@@ -1,5 +1,6 @@
 #include <uvchan/queue.h>
 
+#include <assert.h>
 #include <string.h>
 
 #define MEM_LOCATION(buffer, index, element_size) \
@@ -16,7 +17,10 @@ void uvchan_queue_init(uvchan_queue* queue, size_t num_elements,
   queue->head = INCREMENT(0, queue->capacity_elements);
 }
 
-void uvchan_queue_destroy(uvchan_queue* queue) { free(queue->buffer); }
+void uvchan_queue_destroy(uvchan_queue* queue) {
+  assert(queue->head == INCREMENT(queue->tail, queue->capacity_elements));
+  free(queue->buffer);
+}
 
 uvchan_error_t uvchan_queue_push(uvchan_queue* queue, const void* element) {
   if (queue->head == queue->tail) {

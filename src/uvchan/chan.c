@@ -97,21 +97,21 @@ static void _uvchan_start_pop_idle_cb(uv_idle_t* handle) {
   ch_handle = (uvchan_handle_t*)handle;
   ch_handle->ch->polling++;
 
-  if (ch_handle->ch->closed) {
-    uv_idle_stop(handle);
-    ch_handle->ch->polling--;
-    uvchan_unref(ch_handle->ch);
-
-    ((uvchan_pop_cb)(ch_handle->callback))(ch_handle, ch_handle->element,
-                                           UVCHAN_ERR_CHANNEL_CLOSED);
-  } else if (uvchan_queue_pop(&ch_handle->ch->queue, ch_handle->element) ==
-             UVCHAN_ERR_SUCCESS) {
+  if (uvchan_queue_pop(&ch_handle->ch->queue, ch_handle->element) ==
+      UVCHAN_ERR_SUCCESS) {
     uv_idle_stop(handle);
     ch_handle->ch->polling--;
     uvchan_unref(ch_handle->ch);
 
     ((uvchan_pop_cb)(ch_handle->callback))(ch_handle, ch_handle->element,
                                            UVCHAN_ERR_SUCCESS);
+  } else if (ch_handle->ch->closed) {
+    uv_idle_stop(handle);
+    ch_handle->ch->polling--;
+    uvchan_unref(ch_handle->ch);
+
+    ((uvchan_pop_cb)(ch_handle->callback))(ch_handle, ch_handle->element,
+                                           UVCHAN_ERR_CHANNEL_CLOSED);
   }
 }
 
