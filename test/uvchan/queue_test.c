@@ -55,6 +55,15 @@ void test_push_pop_full(void) {
   uvchan_queue_destroy(&q);
 }
 
+// The following test checks whether q queue
+// object can be used as an IPC tool iff only
+// one consumer and one producer use the queue.
+// since this test is performed under this strict
+// condition, but not generally in case of multiple
+// producers and consumers, thread sanitizer would
+// complain. this is why it has been disabled under
+// thread sanitizer.
+#ifndef THREAD_SANITIZER
 void* _test_ipc_safety_producer(void* data) {
   uvchan_queue* q;
   int i;
@@ -104,7 +113,10 @@ void test_ipc_safety(void) {
   T_OK(pthread_create(&producer, NULL, _test_ipc_safety_producer, &q));
   T_OK(pthread_join(consumer, NULL));
   T_OK(pthread_join(producer, NULL));
+
+  uvchan_queue_destroy(&q);
 }
+#endif
 
 int main(int argc, char* argv[]) {
   T_INIT(argc, argv);
@@ -113,7 +125,19 @@ int main(int argc, char* argv[]) {
   T_RUN(test_push_should_not_push_to_empty);
   T_RUN(test_push_pop_single_element);
   T_RUN(test_push_pop_full);
+
+// The following test checks whether q queue
+// object can be used as an IPC tool iff only
+// one consumer and one producer use the queue.
+// since this test is performed under this strict
+// condition, but not generally in case of multiple
+// producers and consumers, thread sanitizer would
+// complain. this is why it has been disabled under
+// thread sanitizer.
+
+#ifndef THREAD_SANITIZER
   T_RUN(test_ipc_safety);
+#endif
 
   return 0;
 }
