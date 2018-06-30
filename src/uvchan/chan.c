@@ -95,7 +95,6 @@ static void _uvchan_start_pop_idle_cb(uv_idle_t* handle) {
 #endif
 
   ch_handle = (uvchan_handle_t*)handle;
-  ch_handle->ch->polling++;
 
   if (uvchan_queue_pop(&ch_handle->ch->queue, ch_handle->element) ==
       UVCHAN_ERR_SUCCESS) {
@@ -119,6 +118,7 @@ void uvchan_start_pop(uvchan_handle_t* handle, void* element,
                       uvchan_pop_cb cb) {
   handle->element = element;
   handle->callback = (void*)cb;
+  handle->ch->polling++;
   uvchan_ref(handle->ch);
 
   uv_idle_start((uv_idle_t*)handle, _uvchan_start_pop_idle_cb);
