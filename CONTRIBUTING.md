@@ -44,14 +44,7 @@ to work.
 
 **First** make sure clang is installed. you can install clang via `apt-get install clang` under ubuntu systems.
 
-**Second** determine location of `glib-2.0` and `gobject-2.0` include dirs via invoking `pkg-config`:
-
-```bash
-pkg-config --cflags glib-2.0
-pkg-config --cflags gobject-2.0
-```
-
-**Third**, create a file `.vscode/c_cpp_properties.json` with following example content:
+**Second**, create a file `.vscode/c_cpp_properties.json` with following example content:
 
 **remember to change `/home/user/` path to appropriate location**
 
@@ -64,8 +57,8 @@ pkg-config --cflags gobject-2.0
                 "/usr/include",
                 "/usr/include/glib-2.0/glib",
                 "/usr/lib/x86_64-linux-gnu/glib-2.0/include",
-                "/home/user/libcontext",
-                "/home/user/libcontext/src"
+                "/home/user/uvchan",
+                "/home/user/uvchan/src"
             ],
             "intelliSenseMode": "clang-x64",
             "compilerPath": "/usr/bin/clang",
@@ -84,9 +77,9 @@ script with links and runs the programms. This is fine until we want to use GDB 
 In that case we need to manually run linked program in `.libs` folder with custom
 `LD_LIBRARY_PATH` provided.
 
-**First** Identify which test/tests you wish to debug. As an example, for `valuemap_test`
-use `test/context/valuemap_test -l` to identify available tests, and
-`test/context/valuemap_test -t <test_path>` to run a specific test.
+**First** Identify which test/tests you wish to debug. As an example, for `xxx_test`
+use `test/context/xxx_test -l` to identify available tests, and
+`test/context/xxx_test -t <test_path>` to run a specific test.
 
 **Second** Fill `.vscode/launch.json` with appropriate values to be used for debugger.
 Listing below shows an example setup in which we try to debug a specific test using
@@ -100,11 +93,11 @@ provided `args` configuration.
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "valuemap_test",
+            "name": "xxx_test",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceRoot}/test/context/.libs/valuemap_test",
-            "args": ["-t", "/valuemap/numeric_string_should_transform_to_int"],
+            "program": "${workspaceRoot}/test/uvchan/.libs/xxx_test",
+            "args": ["-t", "name_of_the_test"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [{

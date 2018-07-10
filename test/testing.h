@@ -116,6 +116,7 @@ void _t_run(void (*fn)(void), const char* name) {
              "expected \"" #expr                                            \
              "\"[=\'%s\"] to not be equal to \"%s\"" _T_COMMA _T_PARAN_OPEN \
                  expr _T_PARAN_CLOSE _T_COMMA value))
+#define T_FAIL(msg) (_t_fail(__FILE__, __LINE__, (msg)))
 
 #define T_RUN(test) _t_run(test, #test)
 

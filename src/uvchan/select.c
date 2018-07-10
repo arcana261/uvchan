@@ -168,7 +168,7 @@ static void _uvchan_start_select_idle_cb(uv_idle_t* handle) {
 }
 
 int uvchan_select_handle_start(uvchan_select_handle_t* handle) {
-  if (handle->count < 1) {
+  if (!handle->has_default && handle->count < 1) {
     return UVCHAN_ERR_SELECT_EMPTY;
   }
 
