@@ -6,7 +6,8 @@ AM_LDFLAGS =
 EXTRA_DIST = \
 	autogen.sh \
 	CPPLINT.cfg \
-	libuvchan.pc
+	libuvchan.pc \
+	test/testing.h
 
 # include libuv as dependency
 AM_CFLAGS += $(LIBUV_CFLAGS) 

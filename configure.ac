@@ -8,7 +8,7 @@ AC_SUBST([LIBVERSION], [0:1:0])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
 
-AM_INIT_AUTOMAKE([1.14 -Wall -Werror foreign subdir-objects])
+AM_INIT_AUTOMAKE([1.14 -Wall -Werror subdir-objects])
 
 AM_PROG_AR
 AC_PROG_CC

@@ -20,6 +20,11 @@
 *.gcov
 /m4/pkg.m4
 /INSTALL
+/AUTHORS
+/ChangeLog
+/COPYING
+/NEWS
+/README
 /*.la
 
 # object files
