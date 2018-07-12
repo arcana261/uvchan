@@ -13,6 +13,11 @@ char MSG[2048];
 jmp_buf JUMP_BUF;
 int ARGC;
 char** ARGV;
+typedef void (*TEST_FN)(void);
+TEST_FN TESTS[1000];
+const char* TEST_NAMES[1000];
+int TESTS_COUNT=0;
+int EXIT_CODE=0;
 
 int _t_fail(const char* file, int line, const char* msg, ...) {
   va_list args;
@@ -27,7 +32,7 @@ int _t_fail(const char* file, int line, const char* msg, ...) {
   return 0;
 }
 
-void T_INIT(int argc, char** argv) {
+void _t_init(int argc, char** argv) {
   int i;
   ARGC = argc;
   ARGV = argv;
@@ -46,11 +51,25 @@ void T_INIT(int argc, char** argv) {
   }
 }
 
-void _t_run(void (*fn)(void), const char* name) {
+void _t_add(void (*fn)(void), const char* name) {
+  TESTS[TESTS_COUNT] = fn;
+  TEST_NAMES[TESTS_COUNT] = name;
+  TESTS_COUNT++;
+}
+
+void _format_dtime(struct timeval *start, struct timeval *stop, char* buffer, size_t n) {
+  int delta;
+
+  delta = (((int)(stop->tv_sec - start->tv_sec)) * 1000) + (((int)(stop->tv_usec - start->tv_usec)) / 1000);
+  snprintf(buffer, n, "%d ms", delta);
+}
+
+void _t_run_test(void (*fn)(void), const char* name) {
   int i;
   int specific_enabled;
   int specific_found;
   struct timeval stop, start;
+  char dtime[100];
     
   specific_enabled = 0;
   specific_found = 0;
@@ -78,15 +97,40 @@ void _t_run(void (*fn)(void), const char* name) {
   gettimeofday(&start, NULL);
 
   if (setjmp(JUMP_BUF) != 0) {
-    printf("ERR\n%s\n", MSG);
-    exit(-1);
+    gettimeofday(&stop, NULL);
+    _format_dtime(&start, &stop, dtime, sizeof(dtime));
+
+    printf("ERR (%s)\n%s\n", dtime, MSG);
+    EXIT_CODE = -1;
   } else {
     fn();
-    gettimeofday(&stop, NULL);
 
-    printf("OK (%d ms)\n", (int)(stop.tv_sec - start.tv_sec) * 1000 + (((int)(stop.tv_usec - start.tv_usec)) / 1000));
+    gettimeofday(&stop, NULL);
+    _format_dtime(&start, &stop, dtime, sizeof(dtime));
+
+    printf("OK (%s)\n", dtime);
     fflush(stdout);
   }
+}
+
+int _t_run(int argc, char** argv) {
+  struct timeval stop, start;
+  char dtime[100];
+  int i;
+
+  _t_init(argc, argv);
+  gettimeofday(&start, NULL);
+
+  for (i = 0; i < TESTS_COUNT; i++) {
+    _t_run_test(TESTS[i], TEST_NAMES[i]);
+  }
+
+  gettimeofday(&stop, NULL);
+  _format_dtime(&start, &stop, dtime, sizeof(dtime));
+
+  printf("\nTests Took: (%s)\n", dtime);
+
+  return EXIT_CODE;
 }
 
 #define _T_COMMA ,
@@ -127,6 +171,7 @@ void _t_run(void (*fn)(void), const char* name) {
                  expr _T_PARAN_CLOSE _T_COMMA value))
 #define T_FAIL(msg) (_t_fail(__FILE__, __LINE__, (msg)))
 
-#define T_RUN(test) _t_run(test, #test)
+#define T_RUN(argc, argv) (_t_run((argc), (argv)))
+#define T_ADD(test) (_t_add(test, #test))
 
 #endif  // TEST_TESTING_H__

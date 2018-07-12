@@ -22,11 +22,9 @@ void test_should_convert_every_error(void) {
 }
 
 int main(int argc, char* argv[]) {
-  T_INIT(argc, argv);
+  T_ADD(test_should_convert_unknown);
+  T_ADD(test_success_should_be_zero);
+  T_ADD(test_should_convert_every_error);
 
-  T_RUN(test_should_convert_unknown);
-  T_RUN(test_success_should_be_zero);
-  T_RUN(test_should_convert_every_error);
-
-  return 0;
+  return T_RUN(argc, argv);
 }

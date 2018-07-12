@@ -128,13 +128,11 @@ void test_destroy_should_set_buffer_to_null(void) {
 }
 
 int main(int argc, char* argv[]) {
-  T_INIT(argc, argv);
-
-  T_RUN(test_pop_should_not_read_from_empty);
-  T_RUN(test_push_should_not_push_to_empty);
-  T_RUN(test_push_pop_single_element);
-  T_RUN(test_push_pop_full);
-  T_RUN(test_destroy_should_set_buffer_to_null);
+  T_ADD(test_pop_should_not_read_from_empty);
+  T_ADD(test_push_should_not_push_to_empty);
+  T_ADD(test_push_pop_single_element);
+  T_ADD(test_push_pop_full);
+  T_ADD(test_destroy_should_set_buffer_to_null);
 
 // The following test checks whether q queue
 // object can be used as an IPC tool iff only
@@ -146,8 +144,8 @@ int main(int argc, char* argv[]) {
 // thread sanitizer.
 
 #ifndef THREAD_SANITIZER
-  T_RUN(test_ipc_safety);
+  T_ADD(test_ipc_safety);
 #endif
 
-  return 0;
+  return T_RUN(argc, argv);
 }

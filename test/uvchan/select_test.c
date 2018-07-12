@@ -370,14 +370,12 @@ void free_loop(uv_loop_t* loop) {
 }
 
 int main(int argc, char* argv[]) {
-  T_INIT(argc, argv);
-
-  T_RUN(test_single_push_should_succeed);
-  T_RUN(test_push_to_empty_channel_should_not_call_pop);
-  T_RUN(test_push_to_empty_channel_should_not_call_default);
-  T_RUN(test_pop_from_empty_queue_should_call_default);
-  T_RUN(test_single_default_should_be_called);
+  T_ADD(test_single_push_should_succeed);
+  T_ADD(test_push_to_empty_channel_should_not_call_pop);
+  T_ADD(test_push_to_empty_channel_should_not_call_default);
+  T_ADD(test_pop_from_empty_queue_should_call_default);
+  T_ADD(test_single_default_should_be_called);
   // T_RUN(test_single_pop);
 
-  return 0;
+  return T_RUN(argc, argv);
 }

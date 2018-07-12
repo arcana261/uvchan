@@ -545,21 +545,19 @@ void free_loop(uv_loop_t* loop) {
 }
 
 int main(int argc, char* argv[]) {
-  T_INIT(argc, argv);
+  T_ADD(test_single_push_should_succeed);
+  T_ADD(test_push_after_close_should_fail);
+  T_ADD(test_pop_after_close_should_fail);
+  T_ADD(test_push_polling);
+  T_ADD(test_single_push_pop);
+  T_ADD(test_full_push_pop);
+  T_ADD(test_closing_should_not_interrupt_pulling);
+  T_ADD(test_push_should_keep_channel_reference);
+  T_ADD(test_pop_should_keep_channel_reference);
+  T_ADD(test_init_handle_should_initialize_data_with_null);
+  T_ADD(test_push_should_support_null_callback);
+  T_ADD(test_push_should_support_null_callback_polling);
+  T_ADD(test_pop_should_support_null_callback);
 
-  T_RUN(test_single_push_should_succeed);
-  T_RUN(test_push_after_close_should_fail);
-  T_RUN(test_pop_after_close_should_fail);
-  T_RUN(test_push_polling);
-  T_RUN(test_single_push_pop);
-  T_RUN(test_full_push_pop);
-  T_RUN(test_closing_should_not_interrupt_pulling);
-  T_RUN(test_push_should_keep_channel_reference);
-  T_RUN(test_pop_should_keep_channel_reference);
-  T_RUN(test_init_handle_should_initialize_data_with_null);
-  T_RUN(test_push_should_support_null_callback);
-  T_RUN(test_push_should_support_null_callback_polling);
-  T_RUN(test_pop_should_support_null_callback);
-
-  return 0;
+  return T_RUN(argc, argv);
 }
