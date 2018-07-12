@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "./config.h"
+#include <sys/time.h>
 
 char MSG[2048];
 jmp_buf JUMP_BUF;
@@ -49,7 +50,8 @@ void _t_run(void (*fn)(void), const char* name) {
   int i;
   int specific_enabled;
   int specific_found;
-
+  struct timeval stop, start;
+    
   specific_enabled = 0;
   specific_found = 0;
 
@@ -72,12 +74,17 @@ void _t_run(void (*fn)(void), const char* name) {
 
   printf("%s... ", name);
   fflush(stdout);
+
+  gettimeofday(&start, NULL);
+
   if (setjmp(JUMP_BUF) != 0) {
     printf("ERR\n%s\n", MSG);
     exit(-1);
   } else {
     fn();
-    printf("OK\n");
+    gettimeofday(&stop, NULL);
+
+    printf("OK (%d ms)\n", (int)(stop.tv_sec - start.tv_sec) * 1000 + (((int)(stop.tv_usec - start.tv_usec)) / 1000));
     fflush(stdout);
   }
 }

@@ -1,6 +1,6 @@
 #include <math.h>
 #include <testing.h>
-#include <time.h>
+#include <sys/time.h>
 #include <uvchan/chan.h>
 #include "./config.h"
 
@@ -55,7 +55,7 @@ typedef struct _data_t {
   action_t* actions;
   size_t count;
   size_t i;
-  time_t recorded_time;
+  struct timeval recorded_time;
 } data_t;
 
 void _test_using(action_t* actions, size_t count, size_t num_elements);
@@ -116,15 +116,15 @@ void test_push_polling(void) {
 
   push_routine[0] = MAKE_ACTION_RECORD_TIME();
   push_routine[1] = MAKE_ACTION_PUSH(12);
-  push_routine[2] = MAKE_ACTION_ASSERT_TIME_GT(1000);
+  push_routine[2] = MAKE_ACTION_ASSERT_TIME_GT(100);
   push_routine[3] = MAKE_ACTION_RECORD_TIME();
   push_routine[4] = MAKE_ACTION_PUSH(20);
-  push_routine[5] = MAKE_ACTION_ASSERT_TIME_GT(1000);
+  push_routine[5] = MAKE_ACTION_ASSERT_TIME_GT(100);
 
-  pop_routine[0] = MAKE_ACTION_SLEEP(1000);
+  pop_routine[0] = MAKE_ACTION_SLEEP(150);
   pop_routine[1] = MAKE_ACTION_RECORD_TIME();
   pop_routine[2] = MAKE_ACTION_POP(12);
-  pop_routine[3] = MAKE_ACTION_SLEEP(1000);
+  pop_routine[3] = MAKE_ACTION_SLEEP(150);
   pop_routine[4] = MAKE_ACTION_RECORD_TIME();
   pop_routine[5] = MAKE_ACTION_ASSERT_TIME_LT(1000);
   pop_routine[6] = MAKE_ACTION_POP(20);
@@ -352,11 +352,15 @@ static void _timer_callback(uv_timer_t* handle);
 #endif
 static void _dealloc_callback(uv_handle_t* handle);
 
+int get_elapsed_time(struct timeval* prev, struct timeval* now) {
+  return ((int)(now->tv_sec - prev->tv_sec)) * 1000 + (((int)(now->tv_usec - prev->tv_usec)) / 1000);
+}
+
 void _perform_action(data_t* data) {
   uvchan_handle_t* handle;
   uv_timer_t* timer;
   action_t* action;
-  time_t now;
+  struct timeval now;
 
   if (data->i >= data->count) {
     return;
@@ -389,19 +393,19 @@ void _perform_action(data_t* data) {
       uv_timer_start(timer, _timer_callback, action->value, action->value);
       break;
     case ACTION_TYPE_RECORD_TIME:
-      data->recorded_time = time(NULL);
+      gettimeofday(&data->recorded_time, NULL);
       data->i++;
       _perform_action(data);
       break;
     case ACTION_TYPE_ASSERT_TIME_GT:
-      now = time(NULL);
-      T_CMPINT((now - data->recorded_time) * 1000, >=, action->value);
+      gettimeofday(&now, NULL);
+      T_CMPINT(get_elapsed_time(&data->recorded_time, &now), >=, action->value);
       data->i++;
       _perform_action(data);
       break;
     case ACTION_TYPE_ASSERT_TIME_LT:
-      now = time(NULL);
-      T_CMPINT((now - data->recorded_time) * 1000, <, action->value);
+      gettimeofday(&now, NULL);
+      T_CMPINT(get_elapsed_time(&data->recorded_time, &now), <, action->value);
       data->i++;
       _perform_action(data);
       break;
