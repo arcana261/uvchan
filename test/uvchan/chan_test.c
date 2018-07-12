@@ -46,6 +46,9 @@ action_t make_action(int type, int value, uvchan_error_t expected_result,
   make_action(ACTION_TYPE_ASSERT_TIME_LT, (value), 0, 0)
 #define MAKE_ACTION_SLEEP(value) make_action(ACTION_TYPE_SLEEP, (value), 0, 0)
 
+uv_loop_t* make_loop(void);
+void free_loop(uv_loop_t* loop);
+
 typedef struct _data_t {
   uvchan_t* ch;
   uv_loop_t* loop;
@@ -68,6 +71,21 @@ void test_single_push_should_succeed(void) {
   actions[3] = MAKE_ACTION_POP(7);
 
   _test_using(actions, sizeof(actions) / sizeof(action_t), 1);
+}
+
+void test_init_handle_should_initialize_data_with_null(void) {
+  uv_loop_t* loop;
+  uvchan_t* ch;
+  uvchan_handle_t handle;
+
+  loop = make_loop();
+  ch = uvchan_new(1, sizeof(int));
+  handle.data = ch;
+  uvchan_handle_init(loop, &handle, ch);
+  T_NULL(handle.data);
+
+  uvchan_unref(ch);
+  free_loop(loop);
 }
 
 void test_push_after_close_should_fail(void) {
@@ -174,6 +192,152 @@ void test_closing_should_not_interrupt_pulling(void) {
   actions[7] = MAKE_ACTION_ASSERT_TIME_LT(1000);
 
   _test_using(actions, sizeof(actions) / sizeof(action_t), 2);
+}
+
+static void _test_push_should_keep_channel_reference_push_cb(
+    uvchan_handle_t* handle, uvchan_error_t err) {
+  int buffer;
+
+  T_CMPINT(handle->ch->reference_count, ==, 1);
+  uvchan_queue_pop(&handle->ch->queue, &buffer);
+  uv_close((uv_handle_t*)handle, NULL);
+}
+
+void test_push_should_keep_channel_reference(void) {
+  uv_loop_t* loop;
+  uvchan_t* chan;
+  uvchan_handle_t push_handle;
+  int value;
+
+  loop = make_loop();
+  chan = uvchan_new(1, sizeof(int));
+  value = 12;
+  uvchan_handle_init(loop, &push_handle, chan);
+  uvchan_start_push(&push_handle, &value,
+                    _test_push_should_keep_channel_reference_push_cb);
+
+  uvchan_unref(chan);
+
+  T_OK(uv_run(loop, UV_RUN_DEFAULT));
+
+  free_loop(loop);
+}
+
+static void _test_pop_should_keep_channel_reference_pop_cb(
+    uvchan_handle_t* handle, void* buffer, uvchan_error_t err) {
+  uv_close((uv_handle_t*)handle, NULL);
+
+  T_CMPINT(handle->ch->reference_count, ==, 1);
+}
+
+void test_pop_should_keep_channel_reference(void) {
+  uv_loop_t* loop;
+  uvchan_t* chan;
+  uvchan_handle_t pop_handle;
+  int value;
+  int buffer;
+
+  value = 12;
+  loop = make_loop();
+  chan = uvchan_new(1, sizeof(int));
+  uvchan_queue_push(&chan->queue, &value);
+  uvchan_handle_init(loop, &pop_handle, chan);
+
+  uvchan_start_pop(&pop_handle, &buffer,
+                   _test_pop_should_keep_channel_reference_pop_cb);
+  uvchan_unref(chan);
+
+  T_OK(uv_run(loop, UV_RUN_DEFAULT));
+
+  free_loop(loop);
+}
+
+static void _test_push_should_support_null_callback_cb(uvchan_handle_t* handle,
+                                                       void* buffer,
+                                                       uvchan_error_t err) {
+  T_CMPINT(err, ==, UVCHAN_ERR_SUCCESS);
+  uv_close((uv_handle_t*)handle, NULL);
+}
+
+void test_push_should_support_null_callback(void) {
+  uv_loop_t* loop;
+  uvchan_t* chan;
+  uvchan_handle_t push_handle;
+  uvchan_handle_t pop_handle;
+  int value;
+  int buffer;
+
+  value = 12;
+  loop = make_loop();
+  chan = uvchan_new(1, sizeof(int));
+  uvchan_handle_init(loop, &push_handle, chan);
+  uvchan_handle_init(loop, &pop_handle, chan);
+  uvchan_start_push(&push_handle, &value, NULL);
+  uvchan_start_pop(&pop_handle, &buffer,
+                   _test_push_should_support_null_callback_cb);
+
+  T_OK(uv_run(loop, UV_RUN_DEFAULT));
+
+  uvchan_unref(chan);
+  free_loop(loop);
+}
+
+static void _test_push_should_support_null_callback_polling_cb(
+    uvchan_handle_t* handle, void* buffer, uvchan_error_t err) {
+  T_CMPINT(err, ==, UVCHAN_ERR_SUCCESS);
+  uv_close((uv_handle_t*)handle, NULL);
+}
+
+void test_push_should_support_null_callback_polling(void) {
+  uv_loop_t* loop;
+  uvchan_t* chan;
+  uvchan_handle_t push_handle;
+  uvchan_handle_t pop_handle;
+  int value;
+  int buffer;
+
+  value = 12;
+  loop = make_loop();
+  chan = uvchan_new(0, sizeof(int));
+  uvchan_handle_init(loop, &push_handle, chan);
+  uvchan_handle_init(loop, &pop_handle, chan);
+  uvchan_start_push(&push_handle, &value, NULL);
+  uvchan_start_pop(&pop_handle, &buffer,
+                   _test_push_should_support_null_callback_polling_cb);
+
+  T_OK(uv_run(loop, UV_RUN_DEFAULT));
+
+  uvchan_unref(chan);
+  free_loop(loop);
+}
+
+static void _test_pop_should_support_null_callback_cb(uvchan_handle_t* handle,
+                                                      uvchan_error_t err) {
+  T_CMPINT(err, ==, UVCHAN_ERR_SUCCESS);
+  uv_close((uv_handle_t*)handle, NULL);
+}
+
+void test_pop_should_support_null_callback(void) {
+  uv_loop_t* loop;
+  uvchan_t* chan;
+  uvchan_handle_t push_handle;
+  uvchan_handle_t pop_handle;
+  int value;
+  int buffer;
+
+  value = 12;
+  loop = make_loop();
+  chan = uvchan_new(1, sizeof(int));
+  uvchan_handle_init(loop, &push_handle, chan);
+  uvchan_handle_init(loop, &pop_handle, chan);
+  uvchan_start_push(&push_handle, &value,
+                    _test_pop_should_support_null_callback_cb);
+  uvchan_start_pop(&pop_handle, &buffer, NULL);
+
+  T_OK(uv_run(loop, UV_RUN_DEFAULT));
+
+  uvchan_unref(chan);
+  free_loop(loop);
 }
 
 static void _push_callback(uvchan_handle_t* handle, uvchan_error_t ok);
@@ -308,30 +472,17 @@ void _test_using(action_t* actions, size_t count, size_t num_elements) {
   data.count = count;
   data.i = 0;
 
-#ifdef LIBUV_0X
-  loop = uv_default_loop();
-#elif LIBUV_1X
-  loop = (uv_loop_t*)malloc(sizeof(uv_loop_t));
-  uv_loop_init(loop);
-#else
-#error unknown operation for unknown version of libuv
-#endif
+  loop = make_loop();
 
   data.loop = loop;
 
+  T_CMPINT(data.ch->reference_count, ==, 1);
   _perform_action(&data);
 
   T_FALSE(uv_run(loop, UV_RUN_DEFAULT));
 
   uvchan_unref(data.ch);
-
-#ifdef LIBUV_0X
-#elif LIBUV_1X
-  uv_loop_close(loop);
-  free(loop);
-#else
-#error unknown operation for unknown version of libuv
-#endif
+  free_loop(loop);
 }
 
 void _test_coroutine_using(action_t* routine1, size_t routine1_count,
@@ -346,14 +497,7 @@ void _test_coroutine_using(action_t* routine1, size_t routine1_count,
   routine1_data.count = routine1_count;
   routine1_data.i = 0;
 
-#ifdef LIBUV_0X
-  loop = uv_default_loop();
-#elif LIBUV_1X
-  loop = (uv_loop_t*)malloc(sizeof(uv_loop_t));
-  uv_loop_init(loop);
-#else
-#error unknown operation for unknown version of libuv
-#endif
+  loop = make_loop();
 
   routine1_data.loop = loop;
 
@@ -368,6 +512,25 @@ void _test_coroutine_using(action_t* routine1, size_t routine1_count,
 
   uvchan_unref(routine1_data.ch);
 
+  free_loop(loop);
+}
+
+uv_loop_t* make_loop(void) {
+  uv_loop_t* loop;
+
+#ifdef LIBUV_0X
+  loop = uv_default_loop();
+#elif LIBUV_1X
+  loop = (uv_loop_t*)malloc(sizeof(uv_loop_t));
+  uv_loop_init(loop);
+#else
+#error unknown operation for unknown version of libuv
+#endif
+
+  return loop;
+}
+
+void free_loop(uv_loop_t* loop) {
 #ifdef LIBUV_0X
 #elif LIBUV_1X
   uv_loop_close(loop);
@@ -387,6 +550,12 @@ int main(int argc, char* argv[]) {
   T_RUN(test_single_push_pop);
   T_RUN(test_full_push_pop);
   T_RUN(test_closing_should_not_interrupt_pulling);
+  T_RUN(test_push_should_keep_channel_reference);
+  T_RUN(test_pop_should_keep_channel_reference);
+  T_RUN(test_init_handle_should_initialize_data_with_null);
+  T_RUN(test_push_should_support_null_callback);
+  T_RUN(test_push_should_support_null_callback_polling);
+  T_RUN(test_pop_should_support_null_callback);
 
   return 0;
 }

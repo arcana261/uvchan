@@ -71,12 +71,14 @@ void _t_run(void (*fn)(void), const char* name) {
   }
 
   printf("%s... ", name);
+  fflush(stdout);
   if (setjmp(JUMP_BUF) != 0) {
     printf("ERR\n%s\n", MSG);
     exit(-1);
   } else {
     fn();
     printf("OK\n");
+    fflush(stdout);
   }
 }
 

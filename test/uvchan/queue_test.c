@@ -118,6 +118,15 @@ void test_ipc_safety(void) {
 }
 #endif
 
+void test_destroy_should_set_buffer_to_null(void) {
+  uvchan_queue q;
+
+  uvchan_queue_init(&q, 1, sizeof(int));
+  T_NOT_NULL(q.buffer);
+  uvchan_queue_destroy(&q);
+  T_NULL(q.buffer);
+}
+
 int main(int argc, char* argv[]) {
   T_INIT(argc, argv);
 
@@ -125,6 +134,7 @@ int main(int argc, char* argv[]) {
   T_RUN(test_push_should_not_push_to_empty);
   T_RUN(test_push_pop_single_element);
   T_RUN(test_push_pop_full);
+  T_RUN(test_destroy_should_set_buffer_to_null);
 
 // The following test checks whether q queue
 // object can be used as an IPC tool iff only
