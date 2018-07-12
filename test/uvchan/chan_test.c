@@ -1,6 +1,6 @@
 #include <math.h>
-#include <testing.h>
 #include <sys/time.h>
+#include <testing.h>
 #include <uvchan/chan.h>
 #include "./config.h"
 
@@ -353,7 +353,8 @@ static void _timer_callback(uv_timer_t* handle);
 static void _dealloc_callback(uv_handle_t* handle);
 
 int get_elapsed_time(struct timeval* prev, struct timeval* now) {
-  return ((int)(now->tv_sec - prev->tv_sec)) * 1000 + (((int)(now->tv_usec - prev->tv_usec)) / 1000);
+  return ((int)(now->tv_sec - prev->tv_sec)) * 1000 +
+         (((int)(now->tv_usec - prev->tv_usec)) / 1000);
 }
 
 void _perform_action(data_t* data) {

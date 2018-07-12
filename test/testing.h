@@ -6,8 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "./config.h"
 #include <sys/time.h>
+#include "./config.h"
 
 char MSG[2048];
 jmp_buf JUMP_BUF;
@@ -16,8 +16,8 @@ char** ARGV;
 typedef void (*TEST_FN)(void);
 TEST_FN TESTS[1000];
 const char* TEST_NAMES[1000];
-int TESTS_COUNT=0;
-int EXIT_CODE=0;
+int TESTS_COUNT = 0;
+int EXIT_CODE = 0;
 
 int _t_fail(const char* file, int line, const char* msg, ...) {
   va_list args;
@@ -57,10 +57,12 @@ void _t_add(void (*fn)(void), const char* name) {
   TESTS_COUNT++;
 }
 
-void _format_dtime(struct timeval *start, struct timeval *stop, char* buffer, size_t n) {
+void _format_dtime(struct timeval* start, struct timeval* stop, char* buffer,
+                   size_t n) {
   int delta;
 
-  delta = (((int)(stop->tv_sec - start->tv_sec)) * 1000) + (((int)(stop->tv_usec - start->tv_usec)) / 1000);
+  delta = (((int)(stop->tv_sec - start->tv_sec)) * 1000) +
+          (((int)(stop->tv_usec - start->tv_usec)) / 1000);
   snprintf(buffer, n, "%d ms", delta);
 }
 
@@ -70,7 +72,7 @@ void _t_run_test(void (*fn)(void), const char* name) {
   int specific_found;
   struct timeval stop, start;
   char dtime[100];
-    
+
   specific_enabled = 0;
   specific_found = 0;
 
