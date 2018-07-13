@@ -28,8 +28,8 @@ int EXIT_CODE = 0;
 int PLAN_START_INDEX = 1;
 int TEST_TIMEOUT = 20000;
 volatile int TEST_RESULT;
-pthread_mutex_t TEST_RUNNER_FINISH_MUTEX, TEST_RUNNER_START_MUTEX;
-pthread_cond_t TEST_RUNNER_FINISH_COND, TEST_RUNNER_START_COND;
+pthread_mutex_t TEST_RUNNER_FINISH_MUTEX;
+pthread_cond_t TEST_RUNNER_FINISH_COND;
 
 #define _TEST_RESULT_OK 0
 #define _TEST_RESULT_ASSERTION_FAILED 1
@@ -194,10 +194,6 @@ static void* _t_runner(void* data) {
 	sigemptyset(&mask);
 	sigaddset(&mask, SIGUSR1);
 
-  _T_RUNTIME_OK(pthread_mutex_lock(&TEST_RUNNER_START_MUTEX));
-  _T_RUNTIME_OK(pthread_cond_signal(&TEST_RUNNER_START_COND));
-  _T_RUNTIME_OK(pthread_mutex_unlock(&TEST_RUNNER_START_MUTEX));
-
   if (setjmp(JUMP_BUF) != 0) {
     TEST_RESULT = _TEST_RESULT_ASSERTION_FAILED;
   } else {
@@ -219,19 +215,13 @@ static void* _t_runner_watchdog(void* data) {
   struct timeval now;
   int is_timeout = 0;
 
-  _T_RUNTIME_OK(pthread_mutex_init(&TEST_RUNNER_START_MUTEX, NULL));
   _T_RUNTIME_OK(pthread_mutex_init(&TEST_RUNNER_FINISH_MUTEX, NULL));
-  _T_RUNTIME_OK(pthread_cond_init(&TEST_RUNNER_START_COND, NULL));
   _T_RUNTIME_OK(pthread_cond_init(&TEST_RUNNER_FINISH_COND, NULL));
 
-  _T_RUNTIME_OK(pthread_mutex_lock(&TEST_RUNNER_START_MUTEX));
   _T_RUNTIME_OK(pthread_mutex_lock(&TEST_RUNNER_FINISH_MUTEX));
 
   _T_RUNTIME_OK(pthread_create(&runner, NULL, _t_runner, data));
   
-  _T_RUNTIME_OK(pthread_cond_wait(&TEST_RUNNER_START_COND, &TEST_RUNNER_START_MUTEX));
-  _T_RUNTIME_OK(pthread_mutex_unlock(&TEST_RUNNER_START_MUTEX));
-
   gettimeofday(&now, NULL);
   wait.tv_sec = now.tv_sec + (((long)TEST_TIMEOUT) / 1000L);
   wait.tv_nsec = (now.tv_usec * 1000L) + ((((long)TEST_TIMEOUT) % 1000L) * 1000000L);
@@ -259,9 +249,7 @@ static void* _t_runner_watchdog(void* data) {
     TEST_RESULT = _TEST_RESULT_TIMEOUT;
   }
 
-  _T_RUNTIME_OK(pthread_cond_destroy(&TEST_RUNNER_START_COND));
   _T_RUNTIME_OK(pthread_cond_destroy(&TEST_RUNNER_FINISH_COND));
-  _T_RUNTIME_OK(pthread_mutex_destroy(&TEST_RUNNER_START_MUTEX));
   _T_RUNTIME_OK(pthread_mutex_destroy(&TEST_RUNNER_FINISH_MUTEX));
 
   return NULL;
