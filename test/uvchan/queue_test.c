@@ -122,9 +122,9 @@ void test_destroy_should_set_buffer_to_null(void) {
   uvchan_queue q;
 
   uvchan_queue_init(&q, 1, sizeof(int));
-  T_NOT_NULL(q.buffer);
+  T_NOT_NULL(q._buffer);
   uvchan_queue_destroy(&q);
-  T_NULL(q.buffer);
+  T_NULL(q._buffer);
 }
 
 int main(int argc, char* argv[]) {
