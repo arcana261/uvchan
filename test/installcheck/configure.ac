@@ -1,9 +1,6 @@
 AC_PREREQ([2.69])
 AC_INIT([libuvchan_installcheck], [0.1.0], [https://github.com/arcana261/uvchan/issues])
 
-# check file exists
-# AC_CONFIG_SRCDIR([src/hello.c])
-
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([../../m4])
 
