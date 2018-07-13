@@ -27,6 +27,7 @@ int TESTS_COUNT = 0;
 int EXIT_CODE = 0;
 int PLAN_START_INDEX = 1;
 int TEST_TIMEOUT = 20000;
+int PRINT_TEST_PLAN = 1;
 volatile int TEST_RESULT;
 pthread_mutex_t TEST_RUNNER_FINISH_MUTEX;
 pthread_cond_t TEST_RUNNER_FINISH_COND;
@@ -64,6 +65,7 @@ void _t_help() {
   printf("\t-e, --exclude: skip running specific test\n");
   printf("\t-i, --index: starting test index to use for TAP(Test Anything Protocol), Default: 1\n");
   printf("\t-w, --timeout: timeout in milliseconds to give to each test, Default: %d\n", TEST_TIMEOUT);
+  printf("\t--no-plan: do not print TAP test plan (used for aggregating multiple test files)\n");
   printf("\nsend bug reports to %s\n\n", PACKAGE_BUGREPORT);
 }
 
@@ -92,6 +94,8 @@ void _t_init(int argc, char** argv) {
     } else if (!strcmp(argv[i], "-c") || !strcmp(argv[i], "--count")) {
       printf("%d\n", TESTS_COUNT);
       exit(0);
+    } else if (!strcmp(argv[i], "--no-plan")) {
+      PRINT_TEST_PLAN = 0;
     } else if (!strcmp(argv[i], "-i") || !strcmp(argv[i], "--index")) {
       if ((i + 1) >= argc || !sscanf(argv[i + 1], "%d", &PLAN_START_INDEX)) {
         _t_help();
@@ -242,13 +246,13 @@ static void* _t_runner_watchdog(void* data) {
     _T_RUNTIME_OK(err);
   }
 
-  _T_RUNTIME_OK(pthread_mutex_unlock(&TEST_RUNNER_FINISH_MUTEX));
   _T_RUNTIME_OK(pthread_join(runner, NULL));
 
   if (is_timeout) {
     TEST_RESULT = _TEST_RESULT_TIMEOUT;
   }
 
+  _T_RUNTIME_OK(pthread_mutex_unlock(&TEST_RUNNER_FINISH_MUTEX));
   _T_RUNTIME_OK(pthread_cond_destroy(&TEST_RUNNER_FINISH_COND));
   _T_RUNTIME_OK(pthread_mutex_destroy(&TEST_RUNNER_FINISH_MUTEX));
 
@@ -304,6 +308,12 @@ int _t_run(int argc, char** argv) {
   printf("##\n");
   printf("\n");
   fflush(stdout);
+
+  if (PRINT_TEST_PLAN) {
+    printf("%d..%d\n", PLAN_START_INDEX, PLAN_START_INDEX + TESTS_COUNT - 1);
+    printf("\n");
+    fflush(stdout);
+  }
 
   for (i = 0; i < TESTS_COUNT; i++) {
     if (TEST_MASK[i]) {
