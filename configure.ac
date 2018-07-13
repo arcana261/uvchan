@@ -41,6 +41,7 @@ AX_COVERAGE
 # enable doxygen support
 DX_DOXYGEN_FEATURE(ON)
 DX_HTML_FEATURE(ON)
+DX_MAN_FEATURE(ON)
 DX_INIT_DOXYGEN($PACKAGE_NAME, [Doxyfile], [doc])
 
 # check availability of debian packaging tools
