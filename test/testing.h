@@ -274,9 +274,6 @@ void _t_run_test(void (*fn)(void), const char* name, int index) {
   pthread_t watchdog;
   int err;
 
-  //printf("%s... ", name);
-  //fflush(stdout);
-
   gettimeofday(&start, NULL);
   _T_RUNTIME_OK(pthread_create(&watchdog, NULL, _t_runner_watchdog, fn));
   _T_RUNTIME_OK(pthread_join(watchdog, NULL));
