@@ -1,1 +1,1 @@
-.PHONY: unittest format lint coverage sanity 
+.PHONY: unittest format lint coverage sanity post-installcheck

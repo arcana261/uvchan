@@ -1,9 +1,17 @@
 AC_PREREQ([2.69])
 AC_INIT([libuvchan], [0.1.0], [https://github.com/arcana261/uvchan/issues])
-AC_SUBST([LIBVERSION], [0:1:0])
+AC_SUBST([MAJOR_VERSION], [0])
+
+# 1. Start with version information of ‘0:0:0’ for each libtool library.
+# 2. Update the version information only immediately before a public release of your software. More frequent updates are unnecessary, and only guarantee that the current interface number gets larger faster.
+# 3. If the library source code has changed at all since the last update, then increment revision (‘c:r:a’ becomes ‘c:r+1:a’).
+# 4. If any interfaces have been added, removed, or changed since the last update, increment current, and set revision to 0.
+# 5. If any interfaces have been added since the last public release, then increment age.
+# 6. If any interfaces have been removed or changed since the last public release, then set age to 0.
+AC_SUBST([LIBVERSION], [0:0:0])
 
 # check file exists
-# AC_CONFIG_SRCDIR([src/hello.c])
+AC_CONFIG_SRCDIR([src/uvchan/uvchan.h])
 
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
@@ -60,7 +68,7 @@ PKG_CHECK_MODULES([LIBUV], [libuv >= 1.0 libuv < 2.0], [
 ])
 
 # set output headerfile includedir
-# AC_SUBST([includedir], [$includedir/SOMETHING])
+AC_SUBST([includedir], [$includedir/uvchan])
 
 # enable some more compiler warnings
 # these warning might mess-up with other AC_LINK_IFELSE

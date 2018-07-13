@@ -28,7 +28,6 @@
 /*.la
 /Doxyfile
 /doc
-/libuvchan*
 
 # object files
 *.o

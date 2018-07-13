@@ -8,17 +8,22 @@ EXTRA_DIST = \
 	CPPLINT.cfg \
 	Doxyfile \
 	libuvchan.pc \
-	test/testing.h
+	test/testing.h \
+	src/uvchan/uvchan.h \
+	test/installcheck/autogen.sh \
+	test/installcheck/configure.ac \
+	test/installcheck/Makefile.am \
+	test/installcheck/test/main/main_test.c
 
 # include libuv as dependency
 AM_CFLAGS += $(LIBUV_CFLAGS) 
 AM_LDFLAGS += $(LIBUV_LIBS)
 
 # targets
-lib_LTLIBRARIES = libuvchan-1.la
+lib_LTLIBRARIES = libuvchan-0.la
 
-# libuvchan-1.la
-libuvchan_1_la_SOURCES = \
+# libuvchan-0.la
+libuvchan_0_la_SOURCES = \
 	src/uvchan/error.h \
 	src/uvchan/error.c \
 	src/uvchan/queue.c \
@@ -27,13 +32,14 @@ libuvchan_1_la_SOURCES = \
 	src/uvchan/chan.c \
 	src/uvchan/select.h \
 	src/uvchan/select.c
-libuvchan_1_la_LDFLAGS = $(AM_LDFLAGS) -versioninfo $(LIBVERSION)
+libuvchan_0_la_LDFLAGS = $(AM_LDFLAGS) -versioninfo $(LIBVERSION)
 
 # installation header files
-# include_HEADERS = \
-# 	src/context/valuemap.h \
-# 	src/context/context.h \
-# 	src/context/error.h
+include_HEADERS = \
+	src/uvchan/error.h \
+	src/uvchan/queue.h \
+	src/uvchan/chan.h \
+	src/uvchan/select.h
 
 # installation pkgconfig files
 pkgconfiglibdir = $(libdir)/pkgconfig
@@ -71,4 +77,5 @@ include make/coverage.am
 include make/doxygen.am
 include make/docs.am
 include make/clean.am
+include make/installcheck-lib.am
 include make/phony.am

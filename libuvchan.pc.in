@@ -8,4 +8,4 @@ Description: context akin to glang's context objects!
 Version: @PACKAGE_VERSION@
 Requires: @LIBUV_PKG_REQ@
 Cflags: -I${includedir}
-Libs: -L${libdir} -lcontext-1
+Libs: -L${libdir} -luvchan-@MAJOR_VERSION@
