@@ -52,7 +52,7 @@ jobs:
         - sudo apt-get install -y libuv-dev
       script:
         - ./autogen.sh --no-changelog
-        - ./configure
+        - ./configure --prefix=/usr
         - make
         - sudo make install
         - make post-installcheck
