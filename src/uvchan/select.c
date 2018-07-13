@@ -111,7 +111,7 @@ void _uvchan_start_select_fire(uvchan_select_handle_t* handle, int tag,
     uvchan_unref(handle->channels[i]);
   }
 
-  handle->callback(handle, tag, err);
+  ((uvchan_select_cb)handle->callback)(handle, tag, err);
 }
 
 #ifdef LIBUV_0X

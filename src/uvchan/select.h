@@ -8,10 +8,6 @@
 #define _UVCHAN_OPERATION_PUSH 1
 #define _UVCHAN_OPERATION_POP 2
 
-typedef struct _uvchan_select_handle_t uvchan_select_handle_t;
-typedef void (*uvchan_select_cb)(uvchan_select_handle_t* handle, int tag,
-                                 uvchan_error_t err);
-
 typedef struct _uvchan_select_handle_t {
   uv_idle_t idle_handle;
 
@@ -19,13 +15,16 @@ typedef struct _uvchan_select_handle_t {
   int tags[kUvChanMaxSelect];
   int operations[kUvChanMaxSelect];
   void* elements[kUvChanMaxSelect];
-  uvchan_select_cb callback;
+  void* callback;
   int count;
   int has_default;
   int default_tag;
 
   void* data;
 } uvchan_select_handle_t;
+
+typedef void (*uvchan_select_cb)(uvchan_select_handle_t* handle, int tag,
+                                 uvchan_error_t err);
 
 void uvchan_select_handle_init(uv_loop_t* loop, uvchan_select_handle_t* handle,
                                uvchan_select_cb cb);
