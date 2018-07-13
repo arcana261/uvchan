@@ -18,6 +18,7 @@ TEST_FN TESTS[1000];
 const char* TEST_NAMES[1000];
 int TESTS_COUNT = 0;
 int EXIT_CODE = 0;
+int PLAN_START_INDEX = 1;
 
 int _t_fail(const char* file, int line, const char* msg, ...) {
   va_list args;
@@ -42,8 +43,15 @@ void _t_init(int argc, char** argv) {
       printf("%s v%s\n", PACKAGE_NAME, PACKAGE_VERSION);
       printf("\t-h, --help: show this help message\n");
       printf("\t-l, --list: show list of test cases available\n");
-      printf("\t-t, --test: run specific tests\n");
+      printf("\t-c, --count: print number of tests in test suit and exit\n");
+      printf("\t-t, --test: run specific test\n");
+      printf("\t-e, --exclude: skip running specific test\n");
+      printf("\t-i, --index: starting test index to use for TAP(Test Anything Protocol), Default: 1\n");
       printf("\nsend bug reports to %s\n\n", PACKAGE_BUGREPORT);
+      exit(0);
+    } else if (!strcmp(argv[i], "-c") || !strcmp(argv[i], "--count")) {
+      printf("%d\n", TESTS_COUNT);
+      exit(0);
     } else if (!strcmp(argv[i], "-l") || !strcmp(argv[i], "--list")) {
       printf("%s v%s\n", PACKAGE_NAME, PACKAGE_VERSION);
       printf("\nsend bug reports to %s\n\n", PACKAGE_BUGREPORT);

@@ -27,6 +27,7 @@
 /README
 /*.la
 /Doxyfile
+/doc
 
 # object files
 *.o

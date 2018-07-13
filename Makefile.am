@@ -6,6 +6,7 @@ AM_LDFLAGS =
 EXTRA_DIST = \
 	autogen.sh \
 	CPPLINT.cfg \
+	Doxyfile \
 	libuvchan.pc \
 	test/testing.h
 
