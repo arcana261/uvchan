@@ -1,6 +1,9 @@
 # run tests!
 if HAVE_UNITTEST
 
+AM_CFLAGS += $(PTHREAD_CFLAGS)
+AM_LDFLAGS += $(PTHREAD_LIBS)
+
 # NOTE: check ensures check_PROGRAMS are built
 # before calling check-local which calls unittest
 unittest:

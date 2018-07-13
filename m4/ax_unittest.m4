@@ -8,6 +8,7 @@ AC_DEFUN([AX_UNITTEST],
     
     # resolve pthread
     AX_PTHREAD
+
     AC_CHECK_HEADER([sched.h], [HAS_SCHED=true], [HAS_SCHED=false])
 
     AM_CONDITIONAL([HAVE_UNITTEST], [test x$XARGS != x -a x$HAS_SETJMP = xtrue -a x$ax_pthread_ok = xyes -a x$HAS_SCHED = xtrue -a x$HAS_SYS_TIME = xtrue])
