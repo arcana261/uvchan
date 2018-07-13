@@ -1,17 +1,17 @@
 #ifndef TEST_TESTING_H__
 #define TEST_TESTING_H__
 
+#include <errno.h>
+#include <pthread.h>
 #include <setjmp.h>
+#include <signal.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
-#include <pthread.h>
-#include <unistd.h>
-#include <signal.h>
 #include <time.h>
-#include <errno.h>
+#include <unistd.h>
 
 #include "./config.h"
 
@@ -50,7 +50,8 @@ int _t_fail(const char* file, int line, const char* msg, ...) {
 }
 
 int _t_bailout(const char* file, int line, const char* expr, int code) {
-  printf("Bail out! [%s:%d] RUNTIME ERROR: '%s' FAILED WITH ERROR: %d [%s]\n", file, line, expr, code, strerror(code));
+  printf("Bail out! [%s:%d] RUNTIME ERROR: '%s' FAILED WITH ERROR: %d [%s]\n",
+         file, line, expr, code, strerror(code));
   fflush(stdout);
   exit(100);
   return 0;
@@ -63,15 +64,20 @@ void _t_help() {
   printf("\t-c, --count: print number of tests in test suit and exit\n");
   printf("\t-t, --test: run specific test\n");
   printf("\t-e, --exclude: skip running specific test\n");
-  printf("\t-i, --index: starting test index to use for TAP(Test Anything Protocol), Default: 1\n");
-  printf("\t-w, --timeout: timeout in milliseconds to give to each test, Default: %d\n", TEST_TIMEOUT);
-  printf("\t--no-plan: do not print TAP test plan (used for aggregating multiple test files)\n");
+  printf(
+      "\t-i, --index: starting test index to use for TAP(Test Anything "
+      "Protocol), Default: 1\n");
+  printf(
+      "\t-w, --timeout: timeout in milliseconds to give to each test, Default: "
+      "%d\n",
+      TEST_TIMEOUT);
+  printf(
+      "\t--no-plan: do not print TAP test plan (used for aggregating multiple "
+      "test files)\n");
   printf("\nsend bug reports to %s\n\n", PACKAGE_BUGREPORT);
 }
 
-static void _t_signal_handler(int signum) {
-	pthread_exit(NULL);
-}
+static void _t_signal_handler(int signum) { pthread_exit(NULL); }
 
 void _t_init(int argc, char** argv) {
   int i;
@@ -103,7 +109,7 @@ void _t_init(int argc, char** argv) {
       }
 
       i = i + 1;
-    } else if(!strcmp(argv[i], "-w") || !strcmp(argv[i], "--timeout")) {
+    } else if (!strcmp(argv[i], "-w") || !strcmp(argv[i], "--timeout")) {
       if ((i + 1) >= argc || !sscanf(argv[i + 1], "%d", &TEST_TIMEOUT)) {
         _t_help();
         exit(-1);
@@ -168,7 +174,7 @@ void _t_init(int argc, char** argv) {
     } else {
       _t_help();
       exit(-1);
-    } 
+    }
   }
 }
 
@@ -187,16 +193,16 @@ void _format_dtime(struct timeval* start, struct timeval* stop, char* buffer,
   snprintf(buffer, n, "%d ms", delta);
 }
 
-
-#define _T_RUNTIME_OK(expr) ((err=(expr)) == 0 ? (0) : (_t_bailout(__FILE__, __LINE__, #expr, err)))
+#define _T_RUNTIME_OK(expr) \
+  ((err = (expr)) == 0 ? (0) : (_t_bailout(__FILE__, __LINE__, #expr, err)))
 
 static void* _t_runner(void* data) {
   void (*fn)(void) = (void (*)(void))data;
   static sigset_t mask;
   int err;
 
-	sigemptyset(&mask);
-	sigaddset(&mask, SIGUSR1);
+  sigemptyset(&mask);
+  sigaddset(&mask, SIGUSR1);
 
   if (setjmp(JUMP_BUF) != 0) {
     TEST_RESULT = _TEST_RESULT_ASSERTION_FAILED;
@@ -225,14 +231,15 @@ static void* _t_runner_watchdog(void* data) {
   _T_RUNTIME_OK(pthread_mutex_lock(&TEST_RUNNER_FINISH_MUTEX));
 
   _T_RUNTIME_OK(pthread_create(&runner, NULL, _t_runner, data));
-  
+
   gettimeofday(&now, NULL);
-  wait.tv_sec = now.tv_sec + (((long)TEST_TIMEOUT) / 1000L);
-  wait.tv_nsec = (now.tv_usec * 1000L) + ((((long)TEST_TIMEOUT) % 1000L) * 1000000L);
+  wait.tv_sec = now.tv_sec + ((TEST_TIMEOUT) / 1000L);
+  wait.tv_nsec = (now.tv_usec * 1000L) + (((TEST_TIMEOUT) % 1000L) * 1000000L);
   wait.tv_sec += wait.tv_nsec / 1000000000L;
   wait.tv_nsec = wait.tv_nsec % 1000000000L;
 
-  err = pthread_cond_timedwait(&TEST_RUNNER_FINISH_COND, &TEST_RUNNER_FINISH_MUTEX, &wait);
+  err = pthread_cond_timedwait(&TEST_RUNNER_FINISH_COND,
+                               &TEST_RUNNER_FINISH_MUTEX, &wait);
 
   if (err == ETIMEDOUT) {
     err = pthread_kill(runner, SIGUSR1);
@@ -265,6 +272,7 @@ void _t_run_test(void (*fn)(void), const char* name, int index) {
   char* token;
   pthread_t watchdog;
   int err;
+  char* saveptr;
 
   gettimeofday(&start, NULL);
   _T_RUNTIME_OK(pthread_create(&watchdog, NULL, _t_runner_watchdog, fn));
@@ -274,17 +282,19 @@ void _t_run_test(void (*fn)(void), const char* name, int index) {
   _format_dtime(&start, &stop, dtime, sizeof(dtime));
 
   if (TEST_RESULT == _TEST_RESULT_ASSERTION_FAILED) {
-    printf("not ok %d - %s # ASSERTION FAILED (took: %s)\n", index, name, dtime);
-    token = strtok(MSG, "\n");
+    printf("not ok %d - %s # ASSERTION FAILED (took: %s)\n", index, name,
+           dtime);
+    token = strtok_r(MSG, "\n", &saveptr);
     while (token) {
       printf("# %s\n", token);
-      token = strtok(NULL, "\n");
+      token = strtok_r(NULL, "\n", &saveptr);
     }
     fflush(stdout);
 
     EXIT_CODE = -1;
   } else if (TEST_RESULT == _TEST_RESULT_TIMEOUT) {
-    printf("not ok %d - %s # TIMEOUT EXCEEDED (took: %s)\n", index, name, dtime);
+    printf("not ok %d - %s # TIMEOUT EXCEEDED (took: %s)\n", index, name,
+           dtime);
     fflush(stdout);
 
     EXIT_CODE = -1;
