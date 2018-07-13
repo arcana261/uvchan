@@ -6,7 +6,8 @@ if HAVE_UNITTEST
 #echo "$(check_PROGRAMS)" | xargs
 unittest:
 	@echo -e "\e[32m"
-	@for test_prg in `echo "$(check_PROGRAMS)"`; do echo running $$test_prg ...; echo ""; $(top_builddir)/$$test_prg || exit -1; echo ""; done
+	@let total=0; for test_prg in `echo "$(check_PROGRAMS)"`; do let "total=$$total + $$($(top_builddir)/$$test_prg -c)"; done; echo 1..$$total;
+	@let index=1; let code=0; for test_prg in `echo "$(check_PROGRAMS)"`; do $(top_builddir)/$$test_prg -i $$index || let code=-1; let "index=$$index + $$($(top_builddir)/$$test_prg -c)"; done; if [ $$code -ne 0 ]; then exit -1; fi;
 	@echo -e "\e[0m"
 
 check-local: unittest
