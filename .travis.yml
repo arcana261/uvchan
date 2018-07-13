@@ -6,6 +6,7 @@ stages:
   - lint
   - test
   - sanity
+  - installcheck
   - coverage
 
 jobs:
@@ -16,28 +17,50 @@ jobs:
         - pip install --user cpplint
         - sudo apt-get install -y clang-format || true
       script:
-        - ./autogen.sh
+        - ./autogen.sh --no-changelog
         - ./configure
         - make lint
         - make checkformat
     - stage: test
       compiler: gcc
       script:
-        - ./autogen.sh
+        - ./autogen.sh --no-changelog
         - ./configure
-        - make check
+        - make distcheck
     - stage: test
       compiler: clang
       script:
-        - ./autogen.sh
+        - ./autogen.sh --no-changelog
         - ./configure
-        - make check
+        - make distcheck
+    - stage: test
+      compiler: gcc
+      dist: precise
+      script:
+        - ./autogen.sh --no-changelog
+        - ./configure
+        - make distcheck
+    - stage: test
+      compiler: clang
+      dist: precise
+      script:
+        - ./autogen.sh --no-changelog
+        - ./configure
+        - make distcheck
     - stage: sanity
       compiler: gcc
       script:
-        - ./autogen.sh
+        - ./autogen.sh --no-changelog
         - ./configure
         - make sanity
+    - stage: installcheck
+      compiler: gcc
+      script:
+        - ./autogen.sh --no-changelog
+        - ./configure
+        - make
+        - sudo make install
+        - make post-installcheck
     - stage: coverage
       compiler: gcc
       before_install:
@@ -45,7 +68,7 @@ jobs:
         - sudo apt-get install -y lcov
         - gem install coveralls-lcov
       script:
-        - ./autogen.sh
+        - ./autogen.sh --no-changelog
         - ./configure
         - make coverage
       after_success:
