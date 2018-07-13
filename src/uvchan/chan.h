@@ -13,12 +13,6 @@ typedef struct _uvchan_t {
   int reference_count;
 } uvchan_t;
 
-typedef struct _uvchan_handle_t uvchan_handle_t;
-
-typedef void (*uvchan_push_cb)(uvchan_handle_t* handle, uvchan_error_t err);
-typedef void (*uvchan_pop_cb)(uvchan_handle_t* handle, void* buffer,
-                              uvchan_error_t err);
-
 typedef struct _uvchan_handle_t {
   uv_idle_t idle_handle;
 
@@ -27,6 +21,10 @@ typedef struct _uvchan_handle_t {
   void* callback;
   void* data;
 } uvchan_handle_t;
+
+typedef void (*uvchan_push_cb)(uvchan_handle_t* handle, uvchan_error_t err);
+typedef void (*uvchan_pop_cb)(uvchan_handle_t* handle, void* buffer,
+                              uvchan_error_t err);
 
 uvchan_t* uvchan_new(size_t num_elements, size_t element_size);
 void uvchan_ref(uvchan_t* chan);
