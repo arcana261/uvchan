@@ -16,6 +16,7 @@ jobs:
       before_install:
         - pip install --user cpplint
         - sudo apt-get install -y clang-format || true
+        - sudo apt-get install -y libuv-dev
       script:
         - ./autogen.sh --no-changelog
         - ./configure
@@ -23,38 +24,32 @@ jobs:
         - make checkformat
     - stage: test
       compiler: gcc
+      before_install:
+        - sudo apt-get install -y libuv-dev
       script:
         - ./autogen.sh --no-changelog
         - ./configure
         - make distcheck
     - stage: test
       compiler: clang
-      script:
-        - ./autogen.sh --no-changelog
-        - ./configure
-        - make distcheck
-    - stage: test
-      compiler: gcc
-      dist: precise
-      script:
-        - ./autogen.sh --no-changelog
-        - ./configure
-        - make distcheck
-    - stage: test
-      compiler: clang
-      dist: precise
+      before_install:
+        - sudo apt-get install -y libuv-dev
       script:
         - ./autogen.sh --no-changelog
         - ./configure
         - make distcheck
     - stage: sanity
       compiler: gcc
+      before_install:
+        - sudo apt-get install -y libuv-dev
       script:
         - ./autogen.sh --no-changelog
         - ./configure
         - make sanity
     - stage: installcheck
       compiler: gcc
+      before_install:
+        - sudo apt-get install -y libuv-dev
       script:
         - ./autogen.sh --no-changelog
         - ./configure
@@ -67,6 +62,7 @@ jobs:
         - pip install --user cpp-coveralls
         - sudo apt-get install -y lcov
         - gem install coveralls-lcov
+        - sudo apt-get install -y libuv-dev
       script:
         - ./autogen.sh --no-changelog
         - ./configure
