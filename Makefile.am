@@ -72,4 +72,7 @@ include make/format.am
 include make/check.am
 include make/sanity.am
 include make/coverage.am
+include make/doxygen.am
+include make/docs.am
+include make/clean.am
 include make/phony.am

@@ -8,9 +8,9 @@ AC_DEFUN([AX_CLANG_FORMAT],
     AC_SUBST([XARGS])
     AC_SUBST([TOOL_FIND])
     AC_SUBST([TOOL_CMP])
-    AM_CONDITIONAL([HAVE_CLANG_FORMAT], [test x$CPPLINT != x -a x$XARGS != x -a x$TOOL_FIND != x -a x$TOOL_CMP != x])
+    AM_CONDITIONAL([HAVE_CLANG_FORMAT], [test x$CLANG_FORMAT != x -a x$XARGS != x -a x$TOOL_FIND != x -a x$TOOL_CMP != x])
 
-    AS_IF([test x$CPPLINT = x], [AX_RED_WARN([cpplint not found, disabled code reformatting])])
+    AS_IF([test x$CLANG_FORMAT = x], [AX_RED_WARN([clang-format not found, disabled code reformatting])])
     AS_IF([test x$XARGS = x], [AX_RED_WARN([xargs not found, disabled code reformatting])])
     AS_IF([test x$TOOL_FIND = x], [AX_RED_WARN([find not found, disabled code reformatting])])
     AS_IF([test x$TOOL_CMP = x], [AX_RED_WARN([cmp not found, disabled code reformatting])])

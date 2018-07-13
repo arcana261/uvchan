@@ -26,6 +26,7 @@
 /NEWS
 /README
 /*.la
+/Doxyfile
 
 # object files
 *.o

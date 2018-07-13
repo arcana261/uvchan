@@ -34,7 +34,4 @@ clean-coverage:
 	if [ x${CLEAN_COVERAGE_ON_CLEAN} != xno ]; then rm -f $(top_builddir)/coverage.info; fi
 	if [ x${CLEAN_COVERAGE_ON_CLEAN} != xno ]; then rm -rfv $(top_builddir)/coverage; fi
 
-clean-local: clean-coverage
-
 endif
-

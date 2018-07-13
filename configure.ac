@@ -38,6 +38,11 @@ AX_SANITIZER
 # Checks for existence of coverage tools and define variables for reporting coverage
 AX_COVERAGE
 
+# enable doxygen support
+DX_DOXYGEN_FEATURE(ON)
+DX_HTML_FEATURE(ON)
+DX_INIT_DOXYGEN($PACKAGE_NAME, [Doxyfile], [doc])
+
 # check availability of debian packaging tools
 AX_DPKG
 
@@ -66,6 +71,7 @@ AX_CHECK_CFLAG_APPEND([-Wstrict-prototypes])
 # outputs
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Doxyfile])
 AC_CONFIG_FILES([libuvchan.pc])
 
 # generate all files

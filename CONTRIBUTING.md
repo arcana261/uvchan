@@ -36,6 +36,33 @@ If you have cpplint installed, you can issue linter by running following command
 make lint
 ```
 
+### Running Code Formatter
+
+In order to have consistent code formatting across whole project, We have provided
+`make format` makefile target which executes `clang-format` tool to re-format code.
+In order to use this feature, simply install `clang-format` as follows:
+
+```bash
+sudo apt-get install clang-format
+```
+
+Additinally, We have provided another target `make check-format` which checks to see
+if all files are correctly formatted with `clang-format` tool.
+
+## Generating Documentation
+
+In order to generate doxygen documentation, following requirements must be satisfied:
+
+```bash
+sudo apt-get install doxygen graphviz
+```
+
+Documents can created by calling correct target for desired format, e.g.
+which generates documents in `doc` folder.
+
+```bash
+make html
+```
 
 ## Setting up Visual Studio Code
 

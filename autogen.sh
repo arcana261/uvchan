@@ -2,6 +2,7 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+cd $DIR && git fetch --tags
 cd $DIR && git shortlog -e -s -n > AUTHORS
 cd $DIR && git tag -l -n1000 > NEWS
 cd $DIR && cp README.md README
@@ -17,4 +18,4 @@ for hash in `cd $DIR && git log --pretty=format:"%H"`; do
     echo "" >> $DIR/ChangeLog
 done
 
-autoreconf --verbose --install
+cd $DIR && autoreconf --verbose --install
