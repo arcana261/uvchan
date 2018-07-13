@@ -28,8 +28,8 @@ uvchan_error_t uvchan_queue_push(uvchan_queue* queue, const void* element) {
     return UVCHAN_ERR_QUEUE_FULL;
   }
 
-  memcpy(MEM_LOCATION(queue->_buffer, queue->_head, queue->element_size), element,
-         queue->element_size);
+  memcpy(MEM_LOCATION(queue->_buffer, queue->_head, queue->element_size),
+         element, queue->element_size);
   queue->_head = INCREMENT(queue->_head, queue->capacity_elements);
 
   return UVCHAN_ERR_SUCCESS;
