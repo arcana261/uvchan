@@ -117,7 +117,7 @@ void _uvchan_start_select_fire(uvchan_select_handle_t* handle, int tag,
 #ifdef LIBUV_0X
 static void _uvchan_start_select_idle_cb(uv_idle_t* idle_handle, int status) {
 #elif LIBUV_1X
-static void _uvchan_start_select_idle_cb(uv_idle_t* handle) {
+static void _uvchan_start_select_idle_cb(uv_idle_t* idle_handle) {
 #else
 #error callback not defined for unknown version of libuv
 #endif
