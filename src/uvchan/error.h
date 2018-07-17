@@ -14,6 +14,6 @@ typedef enum _uvchan_error_t {
   _UVCHAN_ERR_COUNT
 } uvchan_error_t;
 
-const char* uvchan_strerr(int code);
+const char* uvchan_strerr(uvchan_error_t code);
 
 #endif  // UVCHAN_ERROR_H__

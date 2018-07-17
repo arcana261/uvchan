@@ -1,6 +1,6 @@
 #include <uvchan/error.h>
 
-const char* uvchan_strerr(int code) {
+const char* uvchan_strerr(uvchan_error_t code) {
   switch (code) {
     case UVCHAN_ERR_SUCCESS:
       return "success";
