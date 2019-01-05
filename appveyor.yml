@@ -18,6 +18,8 @@ environment:
     BUILDTOOL: make
 
 install:
+  - ls
+  - ls /
   - mkdir /c/msys64/repos
   - cd /c/msys64/repos && git clone https://github.com/Alexpux/MINGW-packages.git
   - cd /c/msys64/repos/MINGW-packages/mingw-w64-libuv && updpkgsums
