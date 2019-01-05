@@ -18,13 +18,11 @@ environment:
     BUILDTOOL: make
 
 install:
-  - ls
-  - ls /
-  - mkdir /c/msys64/repos
-  - cd /c/msys64/repos && git clone https://github.com/Alexpux/MINGW-packages.git
-  - cd /c/msys64/repos/MINGW-packages/mingw-w64-libuv && updpkgsums
-  - cd /c/msys64/repos/MINGW-packages/mingw-w64-libuv && makepkg-mingw -fsiL
-  - cd /c/msys64/repos/MINGW-packages/mingw-w64-libuv && pacman -U migw-w64-libuv'''.pkg.tar.xz
+  - mkdir -p /repos
+  - cd /repos && git clone https://github.com/Alexpux/MINGW-packages.git
+  - cd /repos/MINGW-packages/mingw-w64-libuv && updpkgsums
+  - cd /repos/MINGW-packages/mingw-w64-libuv && makepkg-mingw -fsiL
+  - cd /repos/MINGW-packages/mingw-w64-libuv && pacman -U migw-w64-libuv'''.pkg.tar.xz
   
 build_script:
   - ./autogen.sh --no-changelog
