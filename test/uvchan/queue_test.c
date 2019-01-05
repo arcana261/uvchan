@@ -134,14 +134,14 @@ int main(int argc, char* argv[]) {
   T_ADD(test_push_pop_full);
   T_ADD(test_destroy_should_set_buffer_to_null);
 
-// The following test checks whether q queue
-// object can be used as an IPC tool iff only
-// one consumer and one producer use the queue.
-// since this test is performed under this strict
-// condition, but not generally in case of multiple
-// producers and consumers, thread sanitizer would
-// complain. this is why it has been disabled under
-// thread sanitizer.
+  // The following test checks whether q queue
+  // object can be used as an IPC tool iff only
+  // one consumer and one producer use the queue.
+  // since this test is performed under this strict
+  // condition, but not generally in case of multiple
+  // producers and consumers, thread sanitizer would
+  // complain. this is why it has been disabled under
+  // thread sanitizer.
 
 #ifndef THREAD_SANITIZER
   T_ADD(test_ipc_safety);

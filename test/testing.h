@@ -44,7 +44,8 @@ int _t_fail(const char* file, int line, const char* msg, ...) {
   vsnprintf(TEMP, sizeof(TEMP), msg, args);
   va_end(args);
 
-  snprintf(_T_MSG, sizeof(_T_MSG), "[%s:%d] ASSERTION FAILED: %s", file, line, TEMP);
+  snprintf(_T_MSG, sizeof(_T_MSG), "[%s:%d] ASSERTION FAILED: %s", file, line,
+           TEMP);
   longjmp(JUMP_BUF, 1);
   return 0;
 }
