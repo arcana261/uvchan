@@ -15,7 +15,7 @@
 
 #include "./config.h"
 
-char MSG[4096];
+char _T_MSG[4096];
 jmp_buf JUMP_BUF;
 int ARGC;
 char** ARGV;
@@ -38,17 +38,18 @@ pthread_cond_t TEST_RUNNER_FINISH_COND;
 
 int _t_fail(const char* file, int line, const char* msg, ...) {
   va_list args;
-  char TEMP[sizeof(MSG)];
+  char TEMP[sizeof(_T_MSG)];
 
   va_start(args, msg);
   vsnprintf(TEMP, sizeof(TEMP), msg, args);
   va_end(args);
 
-  snprintf(MSG, sizeof(MSG), "[%s:%d] ASSERTION FAILED: %s", file, line, TEMP);
+  snprintf(_T_MSG, sizeof(_T_MSG), "[%s:%d] ASSERTION FAILED: %s", file, line, TEMP);
   longjmp(JUMP_BUF, 1);
   return 0;
 }
 
+#ifdef HAS_UNITTEST_TIMEOUT
 int _t_bailout(const char* file, int line, const char* expr, int code) {
   printf("Bail out! [%s:%d] RUNTIME ERROR: '%s' FAILED WITH ERROR: %d [%s]\n",
          file, line, expr, code, strerror(code));
@@ -56,6 +57,7 @@ int _t_bailout(const char* file, int line, const char* expr, int code) {
   exit(100);
   return 0;
 }
+#endif
 
 void _t_help() {
   printf("%s v%s\n", PACKAGE_NAME, PACKAGE_VERSION);
@@ -77,7 +79,9 @@ void _t_help() {
   printf("\nsend bug reports to %s\n\n", PACKAGE_BUGREPORT);
 }
 
+#ifdef HAS_UNITTEST_TIMEOUT
 static void _t_signal_handler(int signum) { pthread_exit(NULL); }
+#endif
 
 void _t_init(int argc, char** argv) {
   int i;
@@ -87,7 +91,9 @@ void _t_init(int argc, char** argv) {
   int specific_countered = 0;
   int found;
 
+#ifdef HAS_UNITTEST_TIMEOUT
   signal(SIGUSR1, _t_signal_handler);
+#endif
 
   for (i = 0; i < TESTS_COUNT; i++) {
     TEST_MASK[i] = 1;
@@ -198,11 +204,14 @@ void _format_dtime(struct timeval* start, struct timeval* stop, char* buffer,
 
 static void* _t_runner(void* data) {
   void (*fn)(void) = (void (*)(void))data;
+
+#ifdef HAS_UNITTEST_TIMEOUT
   static sigset_t mask;
   int err;
 
   sigemptyset(&mask);
   sigaddset(&mask, SIGUSR1);
+#endif
 
   if (setjmp(JUMP_BUF) != 0) {
     TEST_RESULT = _TEST_RESULT_ASSERTION_FAILED;
@@ -211,12 +220,16 @@ static void* _t_runner(void* data) {
     TEST_RESULT = _TEST_RESULT_OK;
   }
 
+#ifdef HAS_UNITTEST_TIMEOUT
   _T_RUNTIME_OK(pthread_mutex_lock(&TEST_RUNNER_FINISH_MUTEX));
   _T_RUNTIME_OK(pthread_cond_signal(&TEST_RUNNER_FINISH_COND));
   _T_RUNTIME_OK(pthread_mutex_unlock(&TEST_RUNNER_FINISH_MUTEX));
+#endif
 
   return NULL;
 }
+
+#ifdef HAS_UNITTEST_TIMEOUT
 
 static void* _t_runner_watchdog(void* data) {
   int err;
@@ -266,17 +279,24 @@ static void* _t_runner_watchdog(void* data) {
   return NULL;
 }
 
+#endif
+
 void _t_run_test(void (*fn)(void), const char* name, int index) {
   struct timeval stop, start;
   char dtime[100];
   char* token;
+#ifdef HAS_UNITTEST_TIMEOUT
   pthread_t watchdog;
   int err;
+#endif
   char* saveptr;
 
   gettimeofday(&start, NULL);
+#ifdef HAS_UNITTEST_TIMEOUT
   _T_RUNTIME_OK(pthread_create(&watchdog, NULL, _t_runner_watchdog, fn));
   _T_RUNTIME_OK(pthread_join(watchdog, NULL));
+#endif
+  _t_runner(fn);
   gettimeofday(&stop, NULL);
 
   _format_dtime(&start, &stop, dtime, sizeof(dtime));
@@ -284,7 +304,7 @@ void _t_run_test(void (*fn)(void), const char* name, int index) {
   if (TEST_RESULT == _TEST_RESULT_ASSERTION_FAILED) {
     printf("not ok %d - %s # ASSERTION FAILED (took: %s)\n", index, name,
            dtime);
-    token = strtok_r(MSG, "\n", &saveptr);
+    token = strtok_r(_T_MSG, "\n", &saveptr);
     while (token) {
       printf("# %s\n", token);
       token = strtok_r(NULL, "\n", &saveptr);

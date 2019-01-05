@@ -1,5 +1,6 @@
 # project output
 *_test
+*.exe
 
 # distribution
 /*.tar.gz
