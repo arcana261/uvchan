@@ -18,7 +18,7 @@ environment:
     BUILDTOOL: make
 
 install:
-  - bash -c "mkdir --help"
+  - bash -c "pacman -S base-devel"
   - bash -c "mkdir -p /repos"
   - bash -c "cd /repos && git clone https://github.com/Alexpux/MINGW-packages.git"
   - bash -c "cd /repos/MINGW-packages/mingw-w64-libuv && updpkgsums"
