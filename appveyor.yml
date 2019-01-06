@@ -29,7 +29,7 @@ install:
 build_script:
   - C:\msys64\usr\bin\bash -l -c "cd /c/projects/uvchan && ./autogen.sh --no-changelog"
   - C:\msys64\usr\bin\bash -l -c "cd /c/projects/uvchan && ./configure"
-  - C:\msys64\usr\bin\bash -l -c "ch /c/projects/uvchan && make"
+  - C:\msys64\usr\bin\bash -l -c "cd /c/projects/uvchan && make"
   
 test_script:
   - C:\msys64\usr\bin\bash -l -c "cd /c/projects/uvchan && make check"
