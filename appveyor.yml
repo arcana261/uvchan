@@ -19,6 +19,8 @@ environment:
 
 install:
   - mkdir --help
+  - /usr/bin/mkdir --help
+  - which mkdir
   - mkdir -p /repos
   - cd /repos && git clone https://github.com/Alexpux/MINGW-packages.git
   - cd /repos/MINGW-packages/mingw-w64-libuv && updpkgsums
