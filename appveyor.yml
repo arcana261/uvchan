@@ -18,19 +18,17 @@ environment:
     BUILDTOOL: make
 
 install:
-  - mkdir --help
-  - which mkdir
   - bash -c "mkdir --help"
   - bash -c "mkdir -p /repos"
-  - cd /repos && git clone https://github.com/Alexpux/MINGW-packages.git
-  - cd /repos/MINGW-packages/mingw-w64-libuv && updpkgsums
-  - cd /repos/MINGW-packages/mingw-w64-libuv && makepkg-mingw -fsiL
-  - cd /repos/MINGW-packages/mingw-w64-libuv && pacman -U migw-w64-libuv'''.pkg.tar.xz
+  - bash -c "cd /repos && git clone https://github.com/Alexpux/MINGW-packages.git"
+  - bash -c "cd /repos/MINGW-packages/mingw-w64-libuv && updpkgsums"
+  - bash -c "cd /repos/MINGW-packages/mingw-w64-libuv && makepkg-mingw -fsiL"
+  - bash -c "cd /repos/MINGW-packages/mingw-w64-libuv && pacman -U migw-w64-libuv'''.pkg.tar.xz"
   
 build_script:
-  - ./autogen.sh --no-changelog
-  - ./configure
-  - make
+  - bash -c "./autogen.sh --no-changelog"
+  - bash -c "./configure"
+  - bash -c "make"
   
 test_script:
-  - make check
+  - bash -c "make check"
