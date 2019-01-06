@@ -19,12 +19,13 @@ environment:
     USE_MSYS: true
 
 install:
+  - echo $PWD
   - C:\msys64\usr\bin\bash -l -c "pacman -Sy --needed --noconfirm pacman 2>&1"
   - C:\msys64\usr\bin\bash -l -c "pacman -S --needed --noconfirm base-devel mingw-w64-i686-toolchain mingw-w64-x86_64-toolchain"
   - C:\msys64\usr\bin\bash -l -c "mkdir -p /repos"
   - C:\msys64\usr\bin\bash -l -c "cd /repos && git clone https://github.com/Alexpux/MINGW-packages.git"
   - C:\msys64\usr\bin\bash -l -c "cd /repos/MINGW-packages/mingw-w64-libuv && updpkgsums"
-  - C:\msys64\usr\bin\bash -l -c "cd /repos/MINGW-packages/mingw-w64-libuv && makepkg-mingw -fsiL --nocheck --noconfirm"
+  - C:\msys64\usr\bin\bash -l -c "cd /repos/MINGW-packages/mingw-w64-libuv && makepkg-mingw -fsiL --noprepare --nocheck --noconfirm"
   
 build_script:
   - C:\msys64\usr\bin\bash -l -c "./autogen.sh --no-changelog"
