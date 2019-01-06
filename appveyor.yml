@@ -16,19 +16,21 @@ environment:
     MSYSTEM: MINGW64
     BIT: 64
     BUILDTOOL: make
+    USE_MSYS: true
 
 install:
-  - bash -c "pacman -S base-devel"
-  - bash -c "mkdir -p /repos"
-  - bash -c "cd /repos && git clone https://github.com/Alexpux/MINGW-packages.git"
-  - bash -c "cd /repos/MINGW-packages/mingw-w64-libuv && updpkgsums"
-  - bash -c "cd /repos/MINGW-packages/mingw-w64-libuv && makepkg-mingw -fsiL"
-  - bash -c "cd /repos/MINGW-packages/mingw-w64-libuv && pacman -U migw-w64-libuv'''.pkg.tar.xz"
+  - C:\msys64\usr\bin\bash -l -c "pacman -Sy --needed --noconfirm pacman 2>&1"
+  - C:\msys64\usr\bin\bash -c "pacman -S --needed --noconfirm base-devel mingw-w64-i686-toolchain mingw-w64-x86_64-toolchain"
+  - C:\msys64\usr\bin\bash -c "mkdir -p /repos"
+  - C:\msys64\usr\bin\bash -c "cd /repos && git clone https://github.com/Alexpux/MINGW-packages.git"
+  - C:\msys64\usr\bin\bash -c "cd /repos/MINGW-packages/mingw-w64-libuv && updpkgsums"
+  - C:\msys64\usr\bin\bash -c "cd /repos/MINGW-packages/mingw-w64-libuv && makepkg-mingw -fsiL"
+  - C:\msys64\usr\bin\bash -c "cd /repos/MINGW-packages/mingw-w64-libuv && pacman -U migw-w64-libuv'''.pkg.tar.xz"
   
 build_script:
-  - bash -c "./autogen.sh --no-changelog"
-  - bash -c "./configure"
-  - bash -c "make"
+  - C:\msys64\usr\bin\bash -c "./autogen.sh --no-changelog"
+  - C:\msys64\usr\bin\bash -c "./configure"
+  - C:\msys64\usr\bin\bash -c "make"
   
 test_script:
-  - bash -c "make check"
+  - C:\msys64\usr\bin\bash -c "make check"
