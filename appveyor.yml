@@ -19,7 +19,6 @@ environment:
     USE_MSYS: true
 
 install:
-  - echo %cd%
   - C:\msys64\usr\bin\bash -l -c "pacman -Sy --needed --noconfirm pacman 2>&1"
   - C:\msys64\usr\bin\bash -l -c "pacman -S --needed --noconfirm base-devel mingw-w64-i686-toolchain mingw-w64-x86_64-toolchain"
   - C:\msys64\usr\bin\bash -l -c "mkdir -p /repos"
@@ -28,9 +27,9 @@ install:
   - C:\msys64\usr\bin\bash -l -c "cd /repos/MINGW-packages/mingw-w64-libuv && makepkg-mingw -fsiL --nocheck --noconfirm"
   
 build_script:
-  - C:\msys64\usr\bin\bash -l -c "./autogen.sh --no-changelog"
-  - C:\msys64\usr\bin\bash -l -c "./configure"
-  - C:\msys64\usr\bin\bash -l -c "make"
+  - C:\msys64\usr\bin\bash -l -c "cd /c/projects/uvchan && ./autogen.sh --no-changelog"
+  - C:\msys64\usr\bin\bash -l -c "cd /c/projects/uvchan && ./configure"
+  - C:\msys64\usr\bin\bash -l -c "ch /c/projects/uvchan && make"
   
 test_script:
-  - C:\msys64\usr\bin\bash -l -c "make check"
+  - C:\msys64\usr\bin\bash -l -c "cd /c/projects/uvchan && make check"
