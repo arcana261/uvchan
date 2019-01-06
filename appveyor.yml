@@ -24,8 +24,7 @@ install:
   - C:\msys64\usr\bin\bash -l -c "mkdir -p /repos"
   - C:\msys64\usr\bin\bash -l -c "cd /repos && git clone https://github.com/Alexpux/MINGW-packages.git"
   - C:\msys64\usr\bin\bash -l -c "cd /repos/MINGW-packages/mingw-w64-libuv && updpkgsums"
-  - C:\msys64\usr\bin\bash -l -c "cd /repos/MINGW-packages/mingw-w64-libuv && makepkg-mingw -fsiL"
-  - C:\msys64\usr\bin\bash -l -c "cd /repos/MINGW-packages/mingw-w64-libuv && pacman -U migw-w64-libuv'''.pkg.tar.xz"
+  - C:\msys64\usr\bin\bash -l -c "cd /repos/MINGW-packages/mingw-w64-libuv && makepkg-mingw -fsiL --nocheck --noconfirm"
   
 build_script:
   - C:\msys64\usr\bin\bash -l -c "./autogen.sh --no-changelog"
